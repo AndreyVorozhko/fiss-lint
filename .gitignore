@@ -1,0 +1,8 @@
+# Operational artifacts
+_currenttask/
+
+# Agent skills
+.agents/
+
+# Binaries
+bin/
