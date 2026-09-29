@@ -73,31 +73,36 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - Create a feature branch from `main`: `<type>/story-<id>/<slug>` based on the Taiga User Story.
    - Example: `feature/story-2/infra`.
 
-2. **Planning (Планирование):**
+2. **Planning & Architecture (Планирование и архитектурный дизайн):**
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
-   - Each fine-grained Taiga task corresponds to a dedicated Step in the plan with an explicit `T-<task_id>` tag (per project overrides).
-   - Every Step defines actions, expected evidence, and an explicit Git commit checkpoint.
+   - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
+   - For module and package boundaries, apply `api-and-interface-design` and `software-architecture` (Clean Architecture, deep modules, Hyrum's Law).
+   - If non-trivial architectural trade-offs arise, stress-test them with `doubt-driven-development`.
 
-3. **Execution (Исполнение):**
-   - Sequentially execute plan steps using `executing-plans`.
-   - Follow the loop: *Action → Evidence → Validation → Commit Checkpoint → User Confirmation*.
-   - Never skip steps or accumulate uncommitted work across multiple Taiga tasks.
+3. **Execution & Coding Standards (Исполнение и разработка):**
+   - Sequentially execute plan steps using `executing-plans` (*Action → Evidence → Validation → Commit Checkpoint → User Confirmation*).
+   - **Go Coding Rules:** Strictly follow `.agents/rules/go.md` and `golang-pro` (Effective Go, happy path left-aligned, error wrapping with `%w`, zero external runtime dependencies, no duplicate `package`).
+   - **Markdown Standards:** When implementing or validating Markdown parsing, follow `.agents/rules/markdown.md` (CommonMark 0.31.2, fenced code block isolation).
+   - **Test-Driven Development:** Apply `test-driven-development` (TDD, red-green-refactor loop) for rule evaluation and parsing logic.
+   - **Systematic Debugging:** If unexpected build or test failures occur, investigate root causes using `systematic-debugging` before proposing fixes.
 
-4. **Commit & Traceability (Фиксация изменений):**
-   - Once step evidence is verified, invoke `git-commit`.
-   - Message format: `<type>: <summary> . T-<task_id>`.
-   - Verifies worktree cleanliness and precise task attribution.
+4. **Commit & Verification Gate (Верификация и фиксация изменений):**
+   - Apply `verification-before-completion`: no claims of completion or commits without fresh, observable evidence in terminal output (`go test`, `make build-all`).
+   - Invoke `git-commit` with message format: `<type>: <summary> . T-<task_id>`.
+   - Never accumulate uncommitted work across multiple Taiga tasks.
 
 5. **Agent Self-Review (Саморевью агентом):**
-   - Before handing over work to the human reviewer, perform comprehensive technical verification using the `project-review` skill.
-   - Audits the entire branch/diff against correctness (`Logic Correctness`), project architecture and invariants (`Architecture & Invariants`), code quality, and build/dependency integrity (`Supply Chain & Build Integrity`).
-   - Ensures all identified defects or coverage gaps are resolved before escalating to human attention.
+   - Perform comprehensive technical verification before human handover using `project-review`.
+   - Use `code-review-and-quality` for multi-axis review (correctness, readability, architecture, security, performance).
+   - Apply `review-and-simplify-changes` to review the git diff, eliminate unnecessary complexity, and ensure code reuse.
+   - Apply `improve-codebase-architecture` to verify module depth and run deletion tests.
+   - Resolve all detected issues prior to human escalation.
 
-6. **Human Review Surface (Человеческая приёмка):**
-   - After passing all automated checks and the agent self-review, invoke `human-review-surface`.
-   - Isolates non-automated properties and architectural choices requiring human judgment from already-proven mechanics.
+6. **Human Review Surface & Feedback (Человеческая приёмка):**
+   - Invoke `human-review-surface` to present a concise, evidence-backed surface for human inspection.
+   - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
 
 7. **Task Transition & Handoff (Закрытие и шлюз перехода):**
-   - Use `fiss-maintain` to record the completed story in `FISS/state/fiss-handoff.md`.
+   - Record the completed story in `FISS/state/fiss-handoff.md` using `fiss-maintain`.
    - Transition state to `fiss synchronization: synchronized`.
-   - Fulfills the task transition gate in `FISS/BOOTSTRAP.md` allowing work on the next user story to begin.
+   - Satisfies the transition gate in `FISS/BOOTSTRAP.md`, allowing the next backlog story to begin.
