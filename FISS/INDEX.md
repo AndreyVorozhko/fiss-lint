@@ -4,6 +4,8 @@ Entry point to the intellectual space of the `fiss-lint` project.
 
 - [Baseline Context](BOOTSTRAP.md)
   Read when: read always before beginning work on the project.
+- [Project Overrides](overrides/INDEX.md)
+  Read when: before using any skill or executing skill-governed workflows.
 - [Standard Specification (v1.0.0)](https://fiss.vorozhko.ru/v1.0.0/llms.txt)
   Read when: creating or modifying the intellectual space structure and verifying conformance.
 - [Deterministic FISS Rules](knowledge/subject/rules.md)
