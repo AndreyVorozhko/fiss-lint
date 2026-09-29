@@ -10,5 +10,7 @@ Entry point to the intellectual space of the `fiss-lint` project.
   Read when: implementing, extending, or testing linter validation rules.
 - [Project Architecture & Toolchain](knowledge/project/architecture.md)
   Read when: modifying core architecture, CLI interface, build pipeline, or cross-compilation targets.
+- [Development & Git Workflow](knowledge/project/workflow.md)
+  Read when: creating branches, authoring commits, or organizing task workflow.
 - [Task Synchronization State](state/INDEX.md)
   Read when: checking the task transition gate, handoff status, or synchronization completeness.

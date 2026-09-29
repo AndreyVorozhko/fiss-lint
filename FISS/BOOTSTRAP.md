@@ -14,7 +14,6 @@ It serves as a fast, deterministic gate for developers (CLI), CI/CD pipelines, p
 - **Read-Only Audit:** `fiss-lint` performs read-only checks with standard exit codes (`0` = clean, `1` = errors found). Modes like `--fix` and `init` are intentionally excluded.
 
 ## Canonical Sources
-- **Standard Specification:** [FISS v1.0.0 normative core](https://fiss.vorozhko.ru/v1.0.0/llms.txt).
 - **Task & Issue Tracking:** Canonical task management is hosted in self-hosted [Taiga.io](https://taiga.io/) (Kanban mode). FISS does not duplicate the task tracker.
 - **Operational Task Artifacts:** Temporary operational artifacts for the active task reside in `_currenttask/` in the project root.
 
