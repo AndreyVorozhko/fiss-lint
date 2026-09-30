@@ -105,3 +105,44 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
    - Invoke `human-review-surface` to present a concise, evidence-backed surface for human inspection.
    - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
    - Upon successful human verification, the feature branch is ready for merge into `main`.
+
+## User Story Kanban Transitions
+
+User Stories transition through Taiga kanban columns strictly in sync with the six-stage task lifecycle:
+
+```mermaid
+flowchart LR
+    New["New\n(Backlog)"] --> Ready["Ready\n(Specified)"]
+    Ready --> InProgress["In progress\n(Active dev)"]
+    InProgress --> ReadyForTest["Ready for test\n(Human inspection)"]
+    ReadyForTest --> Done["Done\n(Accepted & merged)"]
+    ReadyForTest -. Changes requested .-> InProgress
+```
+
+1. **`New` → `Ready` (Backlog to Ready):**
+   - Business requirements, epics, and acceptance criteria (DoD) defined.
+   - Initial fine-grained Taiga tasks are created under the story.
+
+2. **`Ready` → `In progress` (Active Development):**
+   - **Trigger:** Beginning work on the story (Stage 1 *Branching* & Stage 2 *Planning*).
+   - Story status is transitioned to `In progress` and assignee is set.
+   - Implementation plan (`_currenttask/plan.md`) overview is posted as a story comment.
+   - Tasks are executed sequentially, authoring atomic commits and closing tasks with evidence comments.
+   - Story remains in `In progress` throughout stages 2, 3, and 4.
+
+3. **`In progress` → `Ready for test` (Ready for Human Review):**
+   - **Trigger:** Completion of all constituent tasks and agent verification (Stage 5 *Agent Self-Review*).
+   - **Criteria:**
+     - All tasks (planned and off-track) are in `Closed` status.
+     - Full test suite and cross-compilation pass (`make clean && make build-all && make test`).
+     - Agent self-review completed via `project-review` and `code-review-and-quality`.
+     - `human-review-surface` generated and presented for human inspection.
+   - Story status is transitioned to `Ready for test`.
+
+4. **`Ready for test` → `Done` (Accepted & Merged):**
+   - **Trigger:** Successful human verification and acceptance (Stage 6 *Human Review Surface & Feedback*).
+   - **Criteria:**
+     - Explicit human approval received without pending blockers.
+     - Feature branch merged into `main`.
+     - FISS context handoff state is synchronized (`FISS/state/fiss-handoff.md`).
+   - Story status is transitioned to `Done` (`is_closed: true`) with an executive summary comment.

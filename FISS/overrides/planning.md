@@ -43,6 +43,11 @@ To maintain seamless alignment between the agent's operational plan in `_current
      - The corresponding Taiga Task MUST be transitioned to `Closed` status (`is_closed: true`).
      - A comment MUST be posted to the Task recording the completion status, commit hash, commit message, and verifiable evidence summary.
 
+4. **User Story Kanban State Transitions:**
+   - **Active Development:** On taking the story into work (Stages 1–2), transition the User Story to `In progress` (`status: 23`) and set the assignee.
+   - **Review Gate:** Upon completing all constituent tasks, passing verification suite, and completing agent self-review (Stage 5), transition the User Story to `Ready for test` (`status: 24`).
+   - **Story Acceptance:** Upon receiving explicit human approval and preparing the branch for merge into `main` (Stage 6), transition the User Story to `Done` (`status: 25`, `is_closed: true`) with an executive summary comment.
+
 ### 5. Off-Track Work & Soft Deviation Protocol
 When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
 
