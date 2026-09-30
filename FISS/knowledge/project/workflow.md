@@ -108,25 +108,18 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - Upon successful human verification, the feature branch is ready for merge into `main`.
 
 7. **Handoff Gate & Intellectual Space Refresh:**
-   - Before transitioning the status in `FISS/state/fiss-handoff.md` to:
-     ```text
-     fiss synchronization: synchronized
-     ```
-     the agent and maintainer MUST perform not only the Human Review Surface verification, but also a comprehensive 7-point intellectual space audit:
-     1. **Subject Knowledge:** Did new subject domain knowledge emerge following task execution and verification? (`subject-knowledge-refresh`);
-     2. **Project Knowledge:** Did new project knowledge (architecture, toolchain, invariants, conventions, gotchas) emerge? (`project-knowledge-refresh`);
-     3. **Architectural Decisions (ADR):** Did new architectural decisions or trade-offs emerge requiring decision lineage tracking? (`adr-maintain`);
-     4. **Risks (Risk Register):** Were new technical or organizational risks identified? (`risk-register`);
-     5. **Open Questions:** Were new open technical questions or uncertainties uncovered? (`open-questions-maintain`);
-     6. **Subject Terminology:** Did new domain terms or concept distinctions appear? (`glossary-maintain`);
-     7. **Project Terminology:** Did new project-specific terms or internal naming conventions emerge? (`glossary-maintain`).
-   - If any of these items emerged, they MUST be integrated into the intellectual space using the corresponding specialized skill and `fiss-maintain`.
-   - In `FISS/state/fiss-handoff.md`, outcomes MUST be formally classified:
-     - `Capture here`: updated or newly created artifacts within `FISS/`;
-     - `Delegate`: outcomes recorded in specialized registries or external trackers;
-     - `No persistence`: non-persisted transient outcomes with explicit rationale.
-   - Final validation of the intellectual space MUST be conducted using `fiss-validate`.
-   - Only after successfully passing this audit and integrating all durable outcomes is the handoff gate closed and the status set to `fiss synchronization: synchronized`.
+   - Before completing the task and setting `fiss synchronization: synchronized`, invoke `fiss-maintain` to conduct the intellectual space refresh and execute the transition gate.
+   - Audit all 7 knowledge dimensions, delegating semantic capture to the corresponding specialized skills:
+     1. **Subject Knowledge:** (`subject-knowledge-refresh`);
+     2. **Project Knowledge:** (`project-knowledge-refresh`);
+     3. **Architectural Decisions (ADR):** (`adr-maintain`);
+     4. **Risks (Risk Register):** (`risk-register`);
+     5. **Open Questions:** (`open-questions-maintain`);
+     6. **Subject Terminology:** (`glossary-maintain`);
+     7. **Project Terminology:** (`glossary-maintain`).
+   - Classify all outcomes in `FISS/state/fiss-handoff.md` (`Capture here`, `Delegate`, `No persistence`) per `fiss-maintain`.
+   - Perform final structural and semantic validation of the intellectual space using `fiss-validate`.
+   - Close the handoff gate and transition state to `synchronized` via `fiss-maintain`.
 
 ## User Story Kanban Transitions
 
@@ -173,8 +166,7 @@ flowchart LR
    - **Criteria:**
      - Explicit human satisfaction with implementation and evidence.
      - Feature branch merged into `main` by the human.
-     - Context handoff verified: a comprehensive 7-point intellectual space audit (subject knowledge, project knowledge, ADRs, risks, open questions, subject terms, project terms) has been conducted, and outcomes integrated via respective skills and `fiss-maintain`.
-     - `fiss-validate` confirms space-wide compliance (`VERIFIED`).
+     - Context handoff verified: Stage 7 (*Handoff Gate & Intellectual Space Refresh*) completed via `fiss-maintain` and verified with `fiss-validate`.
      - Handoff status transitioned to `task status: done`, `fiss synchronization: synchronized`.
    - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
 
