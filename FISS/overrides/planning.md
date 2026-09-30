@@ -7,7 +7,15 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 
 ## Override Rules for Implementation Planning
 
-### 1. Step-to-Task 1:1 Mapping
+### 1. Pre-Planning: Verification Against Current FISS Standard
+- Before decomposing work or formulating the implementation plan in `_currenttask/plan.md`, the agent MUST verify the User Story description, scope, Definition of Done, and referenced validation rules against:
+  1. The normative FISS v1.0.0 specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`);
+  2. The official FISS v1.0.0 Conformance Checklist (`https://fiss.vorozhko.ru/v1.0.0/en/conformance.html`);
+  3. The deterministic rules registry in `FISS/knowledge/subject/rules.md`.
+- **Purpose:** Ensure that the task statement, rule IDs, severities, and acceptance criteria have not become outdated or drifted due to standard evolution since the user story was originally drafted.
+- If discrepancies, obsolete requirements, or missing invariants are identified, the agent MUST explicitly highlight them during pre-analysis and align them with the human before committing to the implementation plan.
+
+### 2. Step-to-Task 1:1 Mapping
 - When planning work decomposed into fine-grained Taiga tasks, each **Шаг (Step)** in `_currenttask/plan.md` MUST map to exactly one Taiga task.
 - The step header MUST explicitly include the Taiga task identifier in the format:
   ```markdown
@@ -16,7 +24,7 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
   *Example:* `### Шаг 1 (T-9): Инициализация go.mod и базовой структуры пакетов`
 - If a Taiga task requires multiple steps due to complexity, subsequent steps MUST be numbered hierarchically (e.g., `Шаг 1.1 (T-9)`, `Шаг 1.2 (T-9)`) to preserve unambiguous task identity.
 
-### 2. Mandatory Commit Checkpoint at Step Level
+### 3. Mandatory Commit Checkpoint at Step Level
 - Commits are placed at the **уровень Шага (Step level)** as the concluding action of that step.
 - Every Step MUST define its final action as an explicit Git commit checkpoint:
   ```markdown
@@ -24,11 +32,11 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
   ```
 - The commit message in the plan MUST strictly copy the `T-<task_id>` from the step header.
 
-### 3. Precondition: Evidence Before Commit
+### 4. Precondition: Evidence Before Commit
 - The commit action MUST NOT be executed until the Step's **Свидетельство (Evidence)** has been obtained and verified (e.g., successful build, passing unit tests, verified CLI output).
 - Committing incomplete, unverified, or broken intermediate states across multiple actions within a step is prohibited.
 
-### 4. Task Tracker (Taiga) Synchronization Protocol
+### 5. Task Tracker (Taiga) Synchronization Protocol
 To maintain seamless alignment between the agent's operational plan in `_currenttask/plan.md` and the canonical task tracker (Taiga):
 
 1. **Plan Header to User Story Comment:**
@@ -58,7 +66,7 @@ To maintain seamless alignment between the agent's operational plan in `_current
    - Each Task and User Story MUST be tagged with the model tag (e.g., `gemini-3.8-flash`) to enable kanban board filtering and model performance tracking.
    - When the `AI Model` custom attribute is defined in the Taiga project settings, the agent MUST also populate this attribute via the API.
 
-### 5. Off-Track Work & Soft Deviation Protocol
+### 6. Off-Track Work & Soft Deviation Protocol
 When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
 
 1. **Local Operational Artifact (`_currenttask/off-track.md`):**

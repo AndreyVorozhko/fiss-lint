@@ -74,6 +74,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
    - Example: `feature/story-2/infra`.
 
 2. **Planning & Architecture (Планирование и архитектурный дизайн):**
+   - **Verification Against FISS Standard:** Audit the User Story statement, DoD, and rule definitions against the latest FISS v1.0.0 specification and Conformance Checklist to identify any outdated assumptions before planning.
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
    - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
    - Synchronize the plan with Taiga per `FISS/overrides/planning.md`: post plan header as a comment to the User Story, and populate each Taiga Task description with its step specification.
