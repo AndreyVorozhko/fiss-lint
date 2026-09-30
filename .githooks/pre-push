@@ -4,7 +4,7 @@ set -e
 # ==============================================================================
 # Git Pre-Push Hook for fiss-lint
 # Ensures FISS Principle 6 (Continuous context synchronization) by preventing
-# pushes to protected branches (main, master, feature/*) when FISS synchronization
+# pushes to protected branches (main, master, feature/*, bugfix/*, hotfix/*, fix/*) when FISS synchronization
 # state is not 'synchronized'.
 # ==============================================================================
 
@@ -14,7 +14,7 @@ ZERO_OID="0000000000000000000000000000000000000000"
 is_protected_branch() {
     local ref="$1"
     case "$ref" in
-        refs/heads/main|refs/heads/master|refs/heads/feature/*)
+        refs/heads/main|refs/heads/master|refs/heads/feature/*|refs/heads/bugfix/*|refs/heads/hotfix/*|refs/heads/fix/*)
             return 0
             ;;
         *)
