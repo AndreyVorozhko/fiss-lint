@@ -27,9 +27,16 @@ FISS Rules Summary:
   FISS-R006  [Error]    Link Integrity: Every relative link in an index MUST resolve to an existing physical .md file or INDEX.md of a composite area.
   FISS-R007  [Error]    Topology: A composite area MUST contain its own INDEX.md.
   FISS-R008  [Error]    Topology: Every used area MUST be reachable from FISS/INDEX.md through indexes.
-  FISS-R009  [Error]    Overrides: If FISS/overrides/ exists, it MUST contain INDEX.md, and FISS/INDEX.md MUST link to FISS/overrides/INDEX.md.
+  FISS-R009  [Error]    Overrides Entry: If FISS/overrides/ exists, it MUST contain INDEX.md, and FISS/INDEX.md MUST link to FISS/overrides/INDEX.md.
   FISS-R010  [Error]    Agent Entry: If AGENTS.md exists, it MUST direct agents to FISS/INDEX.md.
   FISS-R011  [Warning]  Standard Reference: FISS/INDEX.md SHOULD contain a reference to the official standard website (https://fiss.vorozhko.ru).
+  FISS-R012  [Error]    Knowledge Partitioning: FISS/knowledge/ MUST contain strictly subject/ and/or project/ areas.
+  FISS-R013  [Error]    Human Partitioning: FISS/human/ MUST contain strictly knowledge/ and/or hmm/ areas.
+  FISS-R014  [Error]    State Registry: Registries in FISS/state/ MUST be composite areas with INDEX.md or consolidated single files.
+  FISS-R015  [Error]    Derivation Syntax: Derived knowledge MUST use Derived from: with resolving Markdown source links.
+  FISS-R016  [Error]    HMM Derivation: Every content material in FISS/human/hmm/ MUST be explicitly marked as derived.
+  FISS-R017  [Error]    Override Routing: Override navigation in FISS/overrides/ MUST be organized by the subject of a rule.
+  FISS-R018  [Error]    Handoff Validity: The resolved handoff record MUST declare a valid synchronization state and work item.
 `
 
 // Run parses command-line arguments and executes the requested CLI action.

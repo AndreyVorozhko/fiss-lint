@@ -33,7 +33,7 @@ func TestRun(t *testing.T) {
 				"-h, --help",
 				"-v, --version",
 				"FISS-R001",
-				"FISS-R011",
+				"FISS-R018",
 			},
 		},
 		{
@@ -45,7 +45,7 @@ func TestRun(t *testing.T) {
 				"Usage:",
 				"FISS Rules Summary:",
 				"FISS-R001",
-				"FISS-R011",
+				"FISS-R018",
 			},
 		},
 		{
