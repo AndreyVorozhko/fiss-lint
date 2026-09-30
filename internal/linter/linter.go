@@ -41,6 +41,11 @@ func (l *Linter) Lint(projectRoot string) (*model.Report, error) {
 		if err := checkIndexLinks(projectRoot, report); err != nil {
 			return nil, err
 		}
+
+		// Rule FISS-R004 & FISS-R005: Validate navigation format (Read when:) across all INDEX.md files.
+		if err := validateAllIndexes(projectRoot, report); err != nil {
+			return nil, err
+		}
 	}
 
 	return report, nil

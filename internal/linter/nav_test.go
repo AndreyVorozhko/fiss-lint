@@ -1,8 +1,12 @@
 package linter
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"fiss-lint/internal/model"
 )
 
 func TestParseIndexNavEntries(t *testing.T) {
@@ -130,3 +134,226 @@ Entry point to the intellectual space.
 		}
 	})
 }
+
+func TestValidateNavEntries(t *testing.T) {
+	tests := []struct {
+		name        string
+		filePath    string
+		isRootIndex bool
+		input       string
+		wantIssues  int
+		checkIssues func(t *testing.T, issues []model.Issue)
+	}{
+		{
+			name:        "valid navigation entries with bootstrap",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Baseline Context](BOOTSTRAP.md)
+  Read when: read always before beginning work.
+- [Project Overrides](overrides/INDEX.md)
+  Read when: before using any skill.
+`,
+			wantIssues: 0,
+		},
+		{
+			name:        "missing condition line (consecutive links)",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Item 1](item1.md)
+- [Item 2](item2.md)
+  Read when: condition for item 2
+`,
+			wantIssues: 1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" {
+					t.Errorf("expected RuleID 'FISS-R005', got %q", iss.RuleID)
+				}
+				if iss.Line != 1 {
+					t.Errorf("expected Line 1, got %d", iss.Line)
+				}
+				if iss.Message != "missing 'Read when:' condition for navigation entry" {
+					t.Errorf("expected missing message, got %q", iss.Message)
+				}
+			},
+		},
+		{
+			name:        "missing condition line at EOF",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input:       `- [Item at EOF](item.md)`,
+			wantIssues:  1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" || iss.Line != 1 {
+					t.Errorf("unexpected issue: %+v", iss)
+				}
+			},
+		},
+		{
+			name:        "invalid indentation (4 spaces instead of 2)",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Item](item.md)
+    Read when: four spaces indent
+`,
+			wantIssues: 1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" {
+					t.Errorf("expected RuleID 'FISS-R005', got %q", iss.RuleID)
+				}
+				if iss.Line != 2 {
+					t.Errorf("expected Line 2, got %d", iss.Line)
+				}
+				if iss.Message != "invalid indentation for 'Read when:' condition (expected exactly 2 spaces)" {
+					t.Errorf("expected invalid indentation message, got %q", iss.Message)
+				}
+			},
+		},
+		{
+			name:        "invalid indentation (0 spaces)",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Item](item.md)
+Read when: zero spaces indent
+`,
+			wantIssues: 1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" || iss.Line != 2 {
+					t.Errorf("unexpected issue: %+v", iss)
+				}
+			},
+		},
+		{
+			name:        "localized marker (Читать, когда:) is prohibited by FISS v1.0.0",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Документ](doc.md)
+  Читать, когда: всегда перед началом работы
+`,
+			wantIssues: 1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" {
+					t.Errorf("expected RuleID 'FISS-R005', got %q", iss.RuleID)
+				}
+				if iss.Line != 2 {
+					t.Errorf("expected Line 2, got %d", iss.Line)
+				}
+				if iss.Message != "invalid read condition marker (must be exact 'Read when:')" {
+					t.Errorf("expected invalid marker message, got %q", iss.Message)
+				}
+			},
+		},
+		{
+			name:        "empty condition text",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Item](item.md)
+  Read when:    
+`,
+			wantIssues: 1,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				iss := issues[0]
+				if iss.RuleID != "FISS-R005" {
+					t.Errorf("expected RuleID 'FISS-R005', got %q", iss.RuleID)
+				}
+				if iss.Line != 2 {
+					t.Errorf("expected Line 2, got %d", iss.Line)
+				}
+				if iss.Message != "empty condition text in 'Read when:'" {
+					t.Errorf("expected empty condition message, got %q", iss.Message)
+				}
+			},
+		},
+		{
+			name:        "BOOTSTRAP.md without condition triggers both FISS-R005 and FISS-R004 in root index",
+			filePath:    "FISS/INDEX.md",
+			isRootIndex: true,
+			input: `- [Baseline Context](BOOTSTRAP.md)
+- [Next](next.md)
+  Read when: condition for next
+`,
+			wantIssues: 2,
+			checkIssues: func(t *testing.T, issues []model.Issue) {
+				var hasR005, hasR004 bool
+				for _, iss := range issues {
+					if iss.RuleID == "FISS-R005" && iss.Line == 1 {
+						hasR005 = true
+					}
+					if iss.RuleID == "FISS-R004" && iss.Line == 1 {
+						hasR004 = true
+						if iss.Message != "link to BOOTSTRAP.md must have an attached read condition" {
+							t.Errorf("unexpected FISS-R004 message: %q", iss.Message)
+						}
+					}
+				}
+				if !hasR005 || !hasR004 {
+					t.Errorf("expected both FISS-R005 and FISS-R004, got issues: %+v", issues)
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			entries, err := parseIndexNavEntries(strings.NewReader(tt.input))
+			if err != nil {
+				t.Fatalf("unexpected parse error: %v", err)
+			}
+			report := model.NewReport()
+			validateNavEntries(tt.filePath, entries, tt.isRootIndex, report)
+
+			if len(report.Issues) != tt.wantIssues {
+				t.Fatalf("expected %d issues, got %d: %+v", tt.wantIssues, len(report.Issues), report.Issues)
+			}
+			if tt.checkIssues != nil {
+				tt.checkIssues(t, report.Issues)
+			}
+		})
+	}
+}
+
+func TestValidateAllIndexes(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	overridesDir := filepath.Join(fissDir, "overrides")
+	if err := os.MkdirAll(overridesDir, 0o755); err != nil {
+		t.Fatalf("failed to create dirs: %v", err)
+	}
+
+	rootIndex := `- [Baseline Context](BOOTSTRAP.md)
+  Read when: always
+- [Overrides](overrides/INDEX.md)
+  Read when: before skills
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0o644); err != nil {
+		t.Fatalf("failed to write root INDEX.md: %v", err)
+	}
+
+	subIndex := `- [Rule](rule.md)
+- [Invalid Single Line](invalid.md)
+`
+	if err := os.WriteFile(filepath.Join(overridesDir, "INDEX.md"), []byte(subIndex), 0o644); err != nil {
+		t.Fatalf("failed to write sub INDEX.md: %v", err)
+	}
+
+	report := model.NewReport()
+	if err := validateAllIndexes(tempDir, report); err != nil {
+		t.Fatalf("unexpected validateAllIndexes error: %v", err)
+	}
+
+	// subIndex has 2 invalid entries (missing conditions)
+	if report.ErrorsCount() != 2 {
+		t.Fatalf("expected 2 errors in subIndex, got %d: %+v", report.ErrorsCount(), report.Issues)
+	}
+	for _, iss := range report.Issues {
+		if iss.FilePath != "FISS/overrides/INDEX.md" {
+			t.Errorf("expected FilePath 'FISS/overrides/INDEX.md', got %q", iss.FilePath)
+		}
+	}
+}
+
+
