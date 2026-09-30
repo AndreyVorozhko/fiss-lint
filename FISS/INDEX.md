@@ -14,5 +14,7 @@ Entry point to the intellectual space of the `fiss-lint` project.
   Read when: modifying core architecture, CLI interface, build pipeline, or cross-compilation targets.
 - [Development & Git Workflow](knowledge/project/workflow.md)
   Read when: creating branches, authoring commits, or organizing task workflow.
+- [Human Knowledge](human/knowledge/INDEX.md)
+  Read when: configuring developer or agent environments, setting up skills, or reading human-oriented guides.
 - [Task Synchronization State](state/INDEX.md)
   Read when: checking the task transition gate, handoff status, or synchronization completeness.
