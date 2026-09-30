@@ -54,8 +54,8 @@ To maintain seamless alignment between the agent's operational plan in `_current
      ```markdown
      **Модель:** <model_identifier>
      ```
-     *(Example: `**Модель:** Gemini 2.5 Pro`)*.
-   - Each Task and User Story MUST be tagged with the model tag (e.g., `gemini-2.5-pro`) to enable kanban board filtering and model performance tracking.
+     *(Example: `**Модель:** Gemini 3.8 Flash`)*.
+   - Each Task and User Story MUST be tagged with the model tag (e.g., `gemini-3.8-flash`) to enable kanban board filtering and model performance tracking.
    - When the `AI Model` custom attribute is defined in the Taiga project settings, the agent MUST also populate this attribute via the API.
 
 ### 5. Off-Track Work & Soft Deviation Protocol
