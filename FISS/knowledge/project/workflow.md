@@ -108,41 +108,51 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
 
 ## User Story Kanban Transitions
 
-User Stories transition through Taiga kanban columns strictly in sync with the six-stage task lifecycle:
+User Stories transition through Taiga kanban columns strictly in sync with the six-stage task lifecycle, with clear boundaries between agent autonomy and human ownership:
 
 ```mermaid
 flowchart LR
-    New["New\n(Backlog)"] --> Ready["Ready\n(Specified)"]
-    Ready --> InProgress["In progress\n(Active dev)"]
-    InProgress --> ReadyForTest["Ready for test\n(Human inspection)"]
-    ReadyForTest --> Done["Done\n(Accepted & merged)"]
-    ReadyForTest -. Changes requested .-> InProgress
+    New["New\n(Backlog)"] -->|Человек| Ready["Ready\n(Specified)"]
+    Ready -->|Агент| InProgress["In progress\n(Active dev)"]
+    InProgress -->|Агент| ReadyForTest["Ready for test\n(Human inspection)"]
+    ReadyForTest -->|Агент (доработка)| InProgress
+    ReadyForTest -->|Человек (мерж)| Done["Done\n(Accepted & merged)"]
+    Done -->|Человек| Archived["Archived\n(Milestone closed)"]
 ```
 
-1. **`New` → `Ready` (Backlog to Ready):**
+### Role Boundaries & Transition Rules
+
+1. **`New` → `Ready` (Backlog to Ready) — *Human action*:**
    - Business requirements, epics, and acceptance criteria (DoD) defined.
    - Initial fine-grained Taiga tasks are created under the story.
 
-2. **`Ready` → `In progress` (Active Development):**
+2. **`Ready` → `In progress` (Active Development) — *Agent action*:**
    - **Trigger:** Beginning work on the story (Stage 1 *Branching* & Stage 2 *Planning*).
-   - Story status is transitioned to `In progress` and assignee is set.
+   - Agent transitions story status to `In progress` and sets assignee.
    - Implementation plan (`_currenttask/plan.md`) overview is posted as a story comment.
    - Tasks are executed sequentially, authoring atomic commits and closing tasks with evidence comments.
    - Story remains in `In progress` throughout stages 2, 3, and 4.
 
-3. **`In progress` → `Ready for test` (Ready for Human Review):**
+3. **`In progress` → `Ready for test` (Ready for Human Review) — *Agent action*:**
    - **Trigger:** Completion of all constituent tasks and agent verification (Stage 5 *Agent Self-Review*).
    - **Criteria:**
      - All tasks (planned and off-track) are in `Closed` status.
      - Full test suite and cross-compilation pass (`make clean && make build-all && make test`).
      - Agent self-review completed via `project-review` and `code-review-and-quality`.
      - `human-review-surface` generated and presented for human inspection.
-   - Story status is transitioned to `Ready for test`.
+   - Agent transitions story status to `Ready for test`.
 
-4. **`Ready for test` → `Done` (Accepted & Merged):**
-   - **Trigger:** Successful human verification and acceptance (Stage 6 *Human Review Surface & Feedback*).
+4. **Rework Loop: `Ready for test` ⇄ `In progress` — *Agent action upon human feedback*:**
+   - If human inspection identifies defects, missing evidence, or requests revisions, the agent transitions the story back to `In progress`.
+   - After addressing remarks and obtaining fresh verification evidence, the agent returns the story to `Ready for test`.
+
+5. **`Ready for test` → `Done` (Accepted & Merged) — *Human action only*:**
+   - **Trigger:** Human completes independent verification and merges the feature branch into `main`.
    - **Criteria:**
-     - Explicit human approval received without pending blockers.
-     - Feature branch merged into `main`.
-     - FISS context handoff state is synchronized (`FISS/state/fiss-handoff.md`).
-   - Story status is transitioned to `Done` (`is_closed: true`) with an executive summary comment.
+     - Explicit human satisfaction with implementation and evidence.
+     - Feature branch merged into `main` by the human.
+     - Context handoff verified.
+   - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
+
+6. **`Done` → `Archived` — *Human action only*:**
+   - Executed exclusively by the human upon sprint/milestone closing or board cleanup.

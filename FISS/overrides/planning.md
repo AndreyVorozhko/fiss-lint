@@ -44,9 +44,10 @@ To maintain seamless alignment between the agent's operational plan in `_current
      - A comment MUST be posted to the Task recording the completion status, commit hash, commit message, and verifiable evidence summary.
 
 4. **User Story Kanban State Transitions:**
-   - **Active Development:** On taking the story into work (Stages 1–2), transition the User Story to `In progress` (`status: 23`) and set the assignee.
-   - **Review Gate:** Upon completing all constituent tasks, passing verification suite, and completing agent self-review (Stage 5), transition the User Story to `Ready for test` (`status: 24`).
-   - **Story Acceptance:** Upon receiving explicit human approval and preparing the branch for merge into `main` (Stage 6), transition the User Story to `Done` (`status: 25`, `is_closed: true`) with an executive summary comment.
+   - **Active Development (Agent):** On taking the story into work (Stages 1–2), transition the User Story to `In progress` (`status: 23`) and set the assignee.
+   - **Review Gate (Agent):** Upon completing all constituent tasks, passing verification suite, and completing agent self-review (Stage 5), transition the User Story to `Ready for test` (`status: 24`).
+   - **Rework Loop (Agent):** If human feedback during Stage 6 requests revisions, transition the User Story back to `In progress`, perform fixes, and return to `Ready for test` upon obtaining fresh evidence.
+   - **Story Acceptance & Archival (Human Only):** The agent MUST NOT transition stories to `Done` or `Archived`. The transition to `Done` (`status: 25`, `is_closed: true`) and subsequent archival is executed exclusively by the human after independent verification and merging the feature branch into `main`.
 
 ### 5. Off-Track Work & Soft Deviation Protocol
 When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
