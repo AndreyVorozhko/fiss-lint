@@ -14,13 +14,13 @@ fiss synchronization: pending
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 - **Capture here:**
-  - `FISS/knowledge/project/architecture.md`: устранение структурного дрейфа (удалены не существовавшие пакеты `internal/parser` и `internal/reporter`, зафиксирована реальная структура пакетов `cli`, `model`, `linter`), описана архитектура пайплайна валидации и инвариант short-circuit при отсутствии каталога `FISS/` (`FISS-R001`), документирован статус реализованных в MVP правил (`FISS-R001`, `FISS-R002`, `FISS-R003`, `FISS-R011`), явно разделены поддерживаемые и планируемые флаги CLI.
-  - `FISS/knowledge/project/workflow.md`: переход на 7-этапный жизненный цикл задачи с обязательным чек-листом аудита интеллектуального пространства по 7 направлениям (предметные и проектные знания, ADR, риски, открытые вопросы, предметные и проектные термины) перед закрытием handoff-гейта и переводом в `fiss synchronization: synchronized`.
-  - `FISS/state/risks.md`: зарегистрированы ключевые архитектурные и системные риски проекта (`[RISK-001]` дрейф внешнего стандарта FISS, `[RISK-002]` кроссплатформенная регистрозависимость ФС, `[RISK-003]` зацикливание симлинков при обходе).
-  - `FISS/state/open-questions.md`: зафиксированы нерешённые технические неопределённости (`[OQ-001]` стратегия обработки внешних/циклических симлинков, `[OQ-002]` схема JSON-отчёта SARIF vs собственный формат, `[OQ-003]` языковая локализация диагностических сообщений).
-  - `FISS/state/INDEX.md`: добавлены навигационные записи для `risks.md` и `open-questions.md` с точными маркерами `Read when:`.
+  - `FISS/knowledge/project/architecture.md`: eliminated structural drift (removed non-existent `internal/parser` and `internal/reporter` packages, documented actual package layout `cli`, `model`, `linter`), documented validation pipeline architecture and short-circuit invariant on missing `FISS/` directory (`FISS-R001`), recorded implementation status of MVP rules (`FISS-R001`, `FISS-R002`, `FISS-R003`, `FISS-R011`), explicitly categorized supported vs. planned CLI flags.
+  - `FISS/knowledge/project/workflow.md`: adopted strict 7-stage task lifecycle with a mandatory 7-point intellectual space audit checklist (subject knowledge, project knowledge, ADRs, risks, open questions, subject terms, project terms) before closing handoff gate and setting `fiss synchronization: synchronized`.
+  - `FISS/state/risks.md`: registered core architectural and system risks (`[RISK-001]` external FISS standard drift, `[RISK-002]` cross-platform filesystem case sensitivity, `[RISK-003]` symlink traversal loops and boundary escapes).
+  - `FISS/state/open-questions.md`: recorded active technical uncertainties (`[OQ-001]` external and circular symlink handling strategy, `[OQ-002]` machine-readable JSON schema SARIF vs custom format, `[OQ-003]` diagnostic error message localization).
+  - `FISS/state/INDEX.md`: added navigation entries for `risks.md` and `open-questions.md` with precise `Read when:` condition markers.
 - **No persistence:**
-  - Тестовые сценарии и фикстуры проверок являются самоверифицируемыми деталями реализации.
-  - Предметные концепции и глоссарий: исключены из дублирования в `knowledge/subject/`, так как каноническим первоисточником является официальный стандарт FISS v1.0.0 (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`), на который уже установлены ссылки в `FISS/INDEX.md` и `rules.md`.
+  - Test suites and fixtures: self-verifiable implementation details covered by automated tests.
+  - Subject concepts and glossary: excluded from duplication in `knowledge/subject/` because the canonical external source is the official FISS v1.0.0 specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`), already linked in `FISS/INDEX.md` and `rules.md`.
 - **Handoff Decision:**
-  - Проектная память и операционное состояние согласованы с кодовой базой и требованиями. Ветка готова к человеческой проверке и последующему слиянию в `main`.
+  - Project memory and operational state are fully synchronized with the codebase and requirements. Branch is ready for human review and subsequent merge into `main`.

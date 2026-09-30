@@ -69,11 +69,11 @@ Or optionally with scope:
 
 Every user story and its constituent tasks follow a strict seven-stage lifecycle:
 
-1. **Branching (Ветвление):**
+1. **Branching:**
    - Create a feature branch from `main`: `<type>/story-<id>/<slug>` based on the Taiga User Story.
    - Example: `feature/story-2/infra`.
 
-2. **Planning & Architecture (Планирование и архитектурный дизайн):**
+2. **Planning & Architecture:**
    - **Verification Against FISS Standard:** Audit the User Story statement, DoD, and rule definitions against the latest FISS v1.0.0 specification and Conformance Checklist to identify any outdated assumptions before planning.
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
    - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
@@ -81,7 +81,7 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - For module and package boundaries, apply `api-and-interface-design` and `software-architecture` (Clean Architecture, deep modules, Hyrum's Law).
    - If non-trivial architectural trade-offs arise, stress-test them with `doubt-driven-development`.
 
-3. **Execution & Coding Standards (Исполнение и разработка):**
+3. **Execution & Coding Standards:**
    - Sequentially execute plan steps using `executing-plans` (*Action → Evidence → Validation → Commit Checkpoint → User Confirmation*).
    - **Soft Deviations & Off-Track:** Record unexpected but necessary local adaptations in `_currenttask/off-track.md` and mirror them as `[Off-track]` tasks in Taiga per `FISS/overrides/planning.md`.
    - **Go Coding Rules:** Strictly follow `.agents/rules/go.md` and `golang-pro` (Effective Go, happy path left-aligned, error wrapping with `%w`, zero external runtime dependencies, no duplicate `package`).
@@ -89,44 +89,44 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - **Test-Driven Development:** Apply `test-driven-development` (TDD, red-green-refactor loop) for rule evaluation and parsing logic.
    - **Systematic Debugging:** If unexpected build or test failures occur, investigate root causes using `systematic-debugging` before proposing fixes.
 
-4. **Commit & Verification Gate (Верификация и фиксация изменений):**
+4. **Commit & Verification Gate:**
    - Apply `verification-before-completion`: no claims of completion or commits without fresh, observable evidence in terminal output (`go test`, `make build-all`).
    - Invoke `git-commit` with message format: `<type>: <summary> . T-<task_id>`.
    - Upon completing a Step, transition the corresponding Taiga Task to `Closed` status and post completion evidence, AI model identifier, and commit hash as a task comment. Tag the task with the model tag per `FISS/overrides/planning.md`.
    - Never accumulate uncommitted work across multiple Taiga tasks.
 
-5. **Agent Self-Review (Саморевью агентом):**
+5. **Agent Self-Review:**
    - Perform comprehensive technical verification before human handover using `project-review`.
    - Use `code-review-and-quality` for multi-axis review (correctness, readability, architecture, security, performance).
    - Apply `review-and-simplify-changes` to review the git diff, eliminate unnecessary complexity, and ensure code reuse.
    - Apply `improve-codebase-architecture` to verify module depth and run deletion tests.
    - Resolve all detected issues prior to human escalation.
 
-6. **Human Review Surface & Feedback (Человеческая приёмка):**
+6. **Human Review Surface & Feedback:**
    - Invoke `human-review-surface` to present a concise, evidence-backed surface for human inspection.
    - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
    - Upon successful human verification, the feature branch is ready for merge into `main`.
 
-7. **Handoff Gate & Intellectual Space Refresh (Синхронизация FISS перед завершением задачи):**
-   - Перед тем как перевести статус в `FISS/state/fiss-handoff.md` в:
+7. **Handoff Gate & Intellectual Space Refresh:**
+   - Before transitioning the status in `FISS/state/fiss-handoff.md` to:
      ```text
      fiss synchronization: synchronized
      ```
-     мы обязаны провести не только Human Review Surface, но и всесторонний чек-лист аудита интеллектуального пространства по 7 направлениям:
-     1. **Предметное знание (Subject Knowledge):** появилось ли новое предметное знание после выполнения и проверки текущей задачи? (`subject-knowledge-refresh`);
-     2. **Знание о проекте (Project Knowledge):** появилось ли новое знание о проекте (архитектура, тулчейн, инварианты, соглашения, gotchas)? (`project-knowledge-refresh`);
-     3. **Архитектурные решения (ADR):** появились ли новые архитектурные решения или компромиссы, требующие фиксации истории принятия решений? (`adr-maintain`);
-     4. **Риски (Risk Register):** появились ли новые риски после выполнения и проверки текущей задачи? (`risk-register`);
-     5. **Открытые вопросы (Open Questions):** появились ли новые открытые вопросы или нерешённые технические неопределённости? (`open-questions-maintain`);
-     6. **Термины в предметной области (Subject Terminology):** появились ли новые термины или разграничения понятий в предметной области? (`glossary-maintain`);
-     7. **Термины в проекте (Project Terminology):** появились ли новые термины или проектно-специфичные наименования? (`glossary-maintain`).
-   - Если что-то из этого появилось, необходимо внести это в интеллектуальное пространство проекта с помощью соответствующего специализированного навыка и навыка `fiss-maintain`.
-   - В `FISS/state/fiss-handoff.md` фиксируется обязательная классификация результатов:
-     - `Capture here`: обновлённые или добавленные артефакты в `FISS/`;
-     - `Delegate`: переданные в специализированные реестры знания;
-     - `No persistence`: результаты без сохранения в долгосрочной памяти с явным обоснованием.
-   - Проводится итоговая валидация интеллектуального пространства через `fiss-validate`.
-   - Только после прохождения аудита и интеграции всех знаний handoff-гейт закрывается и статус переводится в `fiss synchronization: synchronized`.
+     the agent and maintainer MUST perform not only the Human Review Surface verification, but also a comprehensive 7-point intellectual space audit:
+     1. **Subject Knowledge:** Did new subject domain knowledge emerge following task execution and verification? (`subject-knowledge-refresh`);
+     2. **Project Knowledge:** Did new project knowledge (architecture, toolchain, invariants, conventions, gotchas) emerge? (`project-knowledge-refresh`);
+     3. **Architectural Decisions (ADR):** Did new architectural decisions or trade-offs emerge requiring decision lineage tracking? (`adr-maintain`);
+     4. **Risks (Risk Register):** Were new technical or organizational risks identified? (`risk-register`);
+     5. **Open Questions:** Were new open technical questions or uncertainties uncovered? (`open-questions-maintain`);
+     6. **Subject Terminology:** Did new domain terms or concept distinctions appear? (`glossary-maintain`);
+     7. **Project Terminology:** Did new project-specific terms or internal naming conventions emerge? (`glossary-maintain`).
+   - If any of these items emerged, they MUST be integrated into the intellectual space using the corresponding specialized skill and `fiss-maintain`.
+   - In `FISS/state/fiss-handoff.md`, outcomes MUST be formally classified:
+     - `Capture here`: updated or newly created artifacts within `FISS/`;
+     - `Delegate`: outcomes recorded in specialized registries or external trackers;
+     - `No persistence`: non-persisted transient outcomes with explicit rationale.
+   - Final validation of the intellectual space MUST be conducted using `fiss-validate`.
+   - Only after successfully passing this audit and integrating all durable outcomes is the handoff gate closed and the status set to `fiss synchronization: synchronized`.
 
 ## User Story Kanban Transitions
 
@@ -134,12 +134,12 @@ User Stories transition through Taiga kanban columns strictly in sync with the s
 
 ```mermaid
 flowchart LR
-    New["New\n(Backlog)"] -->|Человек| Ready["Ready\n(Specified)"]
-    Ready -->|Агент| InProgress["In progress\n(Active dev)"]
-    InProgress -->|Агент| ReadyForTest["Ready for test\n(Human inspection)"]
-    ReadyForTest -->|Агент (доработка)| InProgress
-    ReadyForTest -->|Человек (мерж & handoff)| Done["Done\n(Accepted & synchronized)"]
-    Done -->|Человек| Archived["Archived\n(Milestone closed)"]
+    New["New\n(Backlog)"] -->|Human| Ready["Ready\n(Specified)"]
+    Ready -->|Agent| InProgress["In progress\n(Active dev)"]
+    InProgress -->|Agent| ReadyForTest["Ready for test\n(Human inspection)"]
+    ReadyForTest -->|Agent (rework)| InProgress
+    ReadyForTest -->|Human (merge & handoff)| Done["Done\n(Accepted & synchronized)"]
+    Done -->|Human| Archived["Archived\n(Milestone closed)"]
 ```
 
 ### Role Boundaries & Transition Rules
@@ -173,9 +173,9 @@ flowchart LR
    - **Criteria:**
      - Explicit human satisfaction with implementation and evidence.
      - Feature branch merged into `main` by the human.
-     - Context handoff verified: проведён 7-пунктовый аудит изменений интеллектуального пространства (предметные и проектные знания, ADR, риски, открытые вопросы, термины предметной области и проекта), результаты интегрированы через соответствующие навыки и `fiss-maintain`.
-     - `fiss-validate` подтверждает полное соответствие пространства (`VERIFIED`).
-     - Handoff-статус переведён в `task status: done`, `fiss synchronization: synchronized`.
+     - Context handoff verified: a comprehensive 7-point intellectual space audit (subject knowledge, project knowledge, ADRs, risks, open questions, subject terms, project terms) has been conducted, and outcomes integrated via respective skills and `fiss-maintain`.
+     - `fiss-validate` confirms space-wide compliance (`VERIFIED`).
+     - Handoff status transitioned to `task status: done`, `fiss synchronization: synchronized`.
    - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
 
 6. **`Done` → `Archived` — *Human action only*:**

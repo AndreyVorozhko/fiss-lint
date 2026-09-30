@@ -6,79 +6,79 @@ Canonical registry of identified risks for the `fiss-lint` project.
 
 ### [RISK-001] Drift of External FISS v1.0.0 Standard Specification
 
-Статус: Active
+Status: Active
 
-Риск:
-Рассинхронизация механических проверок линтера с актуальной версией спецификации FISS v1.0.0 или Conformance Checklist из-за устаревания первоначальных постановок задач.
+Risk:
+Desynchronization between the linter's mechanical checks and the normative FISS v1.0.0 specification or Conformance Checklist caused by stale user story statements.
 
-Условие / причина:
-Постановки задач в бэклоге формулировались на ранней стадии разработки и могут содержать расхождения с утверждённым стандартом FISS v1.0.0 (например, предположение о возможности локализации маркера `Read when:`).
+Condition / Cause:
+Backlog task statements were drafted early during project inception and may contain discrepancies with the approved FISS v1.0.0 specification (e.g., assuming localization of the `Read when:` marker is allowed).
 
-Последствия:
-Реализация ошибочных или нестандартных проверок, ложноположительные или ложноотрицательные срабатывания у пользователей и агентов, потеря доверия к линтеру.
+Impact:
+Implementation of incorrect or non-standard checks, false positive or false negative findings for developers and AI agents, and loss of confidence in the linter.
 
-Контекст / свидетельство:
-При аудите Story #4 выявлено, что критерий приёмки №4 и задача Task 101 предусматривали поддержку локализации маркера `Читать, когда:`, что прямо запрещено строкой 155 спецификации FISS v1.0.0.
+Context / Evidence:
+Audit of Story #4 revealed that Acceptance Criterion #4 and Task 101 stipulated support for a localized `Читать, когда:` marker, which is explicitly forbidden by line 155 of the FISS v1.0.0 specification.
 
-Реакция:
-Mitigate. Введена обязательная пре-аналитическая сверка постановок с эталонной спецификацией `https://fiss.vorozhko.ru/v1.0.0/llms.txt` перед формированием плана (зафиксировано в `FISS/overrides/planning.md`).
+Mitigation:
+Mitigate. Mandated a pre-planning verification of task statements against the canonical specification at `https://fiss.vorozhko.ru/v1.0.0/llms.txt` before formulating implementation plans (codified in `FISS/overrides/planning.md`).
 
-Триггер:
-Обнаружение несовпадения между текстом пользовательской истории и текстом спецификации стандарта.
+Trigger:
+Discrepancy detected between the user story text and the normative standard specification.
 
-Сигнал пересмотра:
-Публикация обновлений спецификации стандарта FISS или Conformance Checklist.
+Review Signal:
+Release of updates to the FISS standard specification or the Conformance Checklist.
 
 ---
 
 ### [RISK-002] Cross-Platform Filesystem Semantic Discrepancies (Case Sensitivity & Path Separators)
 
-Статус: Active
+Status: Active
 
-Риск:
-Различное поведение линтера на разных операционных системах: пропуск нарушений регистра файлов на Windows/macOS при их падении на Linux.
+Risk:
+Divergent linter behavior across operating systems: overlooking file case violations on Windows and macOS while failing on Linux.
 
-Условие / причина:
-Файловые системы NTFS (Windows) и APFS (macOS) по умолчанию регистронезависимы (case-insensitive), тогда как стандарт FISS требует строгого регистра (`INDEX.md`, `BOOTSTRAP.md`) и прямых слэшей `/` в путях. Системный вызов `os.Stat` на Windows находит файл `index.md` даже при запросе `INDEX.md`.
+Condition / Cause:
+NTFS (Windows) and APFS (macOS) filesystems are case-insensitive by default, whereas FISS requires strict case (`INDEX.md`, `BOOTSTRAP.md`) and forward slashes `/` in path references. Standard system call `os.Stat` on Windows matches `index.md` even when querying `INDEX.md`.
 
-Последствия:
-Проект с некорректным регистром файлов успешно проходит валидацию на рабочей машине разработчика под Windows, но падает в Linux CI/CD или у других пользователей.
+Impact:
+A repository with non-conforming file casing passes validation on a developer's Windows workstation but fails in Linux CI/CD environments or for other users.
 
-Контекст / свидетельство:
-Тесты `internal/linter/root_test.go` на регистр имен файлов подтверждают необходимость проверки точного имени файла в списке элементов директории (`os.ReadDir`).
+Context / Evidence:
+File casing test cases in `internal/linter/root_test.go` demonstrated the necessity of checking exact file entry names by scanning directory entries (`os.ReadDir`).
 
-Реакция:
-Mitigate. Проверку обязательных файлов выполнять со строгой сверкой точного имени через чтение записей каталога (`os.ReadDir`), а для Markdown-ссылок использовать пакет `path` (POSIX-слэши), а не `filepath`.
+Mitigation:
+Mitigate. Validate mandatory files against directory entry lists (`os.ReadDir`) using exact string equality, and normalize Markdown link targets using the POSIX `path` package instead of `filepath`.
 
-Триггер:
-Тестирование кроссплатформенных сборок на Windows-раннерах.
+Trigger:
+Execution of cross-platform CI test suites on Windows/macOS runners.
 
-Сигнал пересмотра:
-Реализация валидации относительных путей в Story #5.
+Review Signal:
+Implementation of relative link path validation in Story #5.
 
 ---
 
 ### [RISK-003] Symlink Loops & Filesystem Traversal Boundary Escapes
 
-Статус: Active
+Status: Active
 
-Риск:
-Зацикливание обхода файловой системы или несанкционированное сканирование каталогов за пределами целевого проекта при наличии рекурсивных или внешних символических ссылок.
+Risk:
+Infinite recursion or unintended scanning outside the target repository boundary due to cyclic or external symbolic links.
 
-Условие / причина:
-Начиная со Story #6 линтер выполняет рекурсивный поиск всех `INDEX.md` и проверку достижимости областей. Символические ссылки могут указывать на родительские каталоги либо на внешние директории системы (например, симлинки на ферму `.agents/skills/`).
+Condition / Cause:
+Starting from Story #6, the linter performs recursive filesystem discovery of all `INDEX.md` files and validates area reachability. Symbolic links may target parent directories or external locations (e.g., skill farm links in `.agents/skills/`).
 
-Последствия:
-Бесконечный цикл обхода, переполнение памяти/стека или ложные ошибки на сторонних файлах вне репозитория.
+Impact:
+Infinite traversal loops, memory/stack exhaustion, or false positive diagnostics on external files outside repository scope.
 
-Контекст / свидетельство:
-В проекте `fiss-lint` каталог `.agents/skills/` содержит внешние симлинки на другие репозитории.
+Context / Evidence:
+In the `fiss-lint` repository itself, `.agents/skills/` contains symlinks targeting external repository paths.
 
-Реакция:
-Mitigate. Реализовать отслеживание посещённых путей/устройств (`device + inode`), ограничить область сканирования границами целевого репозитория и игнорировать не относящиеся к FISS скрытые каталоги.
+Mitigation:
+Mitigate. Track visited filesystem nodes (`device + inode`), restrict traversal strictly within target repository root boundaries, and ignore non-FISS hidden metadata directories.
 
-Триггер:
-Разработка рекурсивного обходчика файловой системы в Story #6.
+Trigger:
+Development of recursive directory scanner in Story #6.
 
-Сигнал пересмотра:
-Архитектурное решение в Story #6 по алгоритму обхода.
+Review Signal:
+Architectural decision on directory traversal algorithm in Story #6.

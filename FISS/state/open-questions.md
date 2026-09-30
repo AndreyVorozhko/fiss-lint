@@ -4,63 +4,63 @@ Canonical registry of unresolved technical uncertainties for the `fiss-lint` pro
 
 ## Active Uncertainties
 
-### [OQ-001] Стратегия обработки внешних и циклических символических ссылок
+### [OQ-001] Symlink Handling Strategy for External and Circular Links
 
-Статус:
+Status:
 Active
 
-Не решено:
-Как именно линтер должен обрабатывать символические ссылки при рекурсивном сканировании репозитория (начиная со Story #6):
-1. Игнорировать ли симлинки, указывающие за пределы корня проекта?
-2. Считать ли внешние ссылки нарушением ссылочной целостности?
-3. Какой механизм защиты от циклов выбрать (хранение канонических путей `filepath.EvalSymlinks` или `os.SameFile` / пары `dev+ino`)?
+Unresolved:
+How the linter should handle symbolic links during recursive directory traversal (starting with Story #6):
+1. Should symlinks pointing outside the project root be ignored?
+2. Should external links be treated as link integrity violations?
+3. Which cycle detection mechanism should be adopted (canonical path resolution via `filepath.EvalSymlinks` or device/inode tracking via `os.SameFile`)?
 
-Почему важно:
-В проектах, использующих симлинки (например, фермы навыков `.agents/skills/` или монорепозитории), некорректная обработка приведёт либо к зацикливанию, либо к ложным ошибкам на внешних файлах.
+Why it matters:
+In repositories utilizing symlink farms (e.g., `.agents/skills/` or monorepos), improper symlink traversal will cause infinite loops or erroneous findings on third-party files.
 
-Источник:
-Обсуждение архитектуры обхода файловой системы и анализ рисков в рамках Story #3 / Story #6.
+Origin:
+Filesystem traversal architecture discussion and risk analysis during Story #3 / Story #6.
 
-Пересмотреть если:
-Начало проектирования рекурсивного валидатора областей в Story #6 (`FISS-R007`, `FISS-R008`).
+Revisit if:
+Design and implementation of recursive area validation begins in Story #6 (`FISS-R007`, `FISS-R008`).
 
 ---
 
-### [OQ-002] Схема машиночитаемого вывода (--format json)
+### [OQ-002] Machine-Readable Output Schema (--format json)
 
-Статус:
+Status:
 Active
 
-Не решено:
-Какую структуру JSON-вывода должен поддерживать флаг `--format json`:
-1. Собственная плоская схема на основе `model.Report` (`issues: [...]`, `summary: {...}`);
-2. Отраслевой стандарт SARIF (Static Analysis Results Interchange Format) для нативной интеграции с GitHub Code Scanning и GitLab SAST;
-3. Двухуровневая поддержка (`--format json` и `--format sarif`).
+Unresolved:
+Which JSON output schema should be supported by `--format json`:
+1. Proprietary flat schema based on `model.Report` (`issues: [...]`, `summary: {...}`);
+2. Industry-standard SARIF (Static Analysis Results Interchange Format) for native integration with GitHub Code Scanning and GitLab SAST;
+3. Two-tier support (`--format json` and `--format sarif`).
 
-Почему важно:
-Определяет контракт интеграции `fiss-lint` в CI/CD пайплайны и удобство парсинга внешними инструментами.
+Why it matters:
+Defines the integration contract for `fiss-lint` in CI/CD pipelines and external tooling consumption.
 
-Источник:
-Архитектурный документ `FISS/knowledge/project/architecture.md` (секция planned flags).
+Origin:
+System architecture document `FISS/knowledge/project/architecture.md` (planned flags section).
 
-Пересмотреть если:
-Переход к реализации задачи по форматированию вывода (Story #9 / репортеры).
+Revisit if:
+Specification and implementation of structured output reporters (Story #9).
 
 ---
 
-### [OQ-003] Языковая локализация сообщений об ошибках
+### [OQ-003] Diagnostic Error Message Localization
 
-Статус:
+Status:
 Active
 
-Не решено:
-Должны ли диагностические сообщения линтера в терминале оставаться строго на английском языке (в едином формате с Rule ID: `[ERROR] [FISS-R001] FISS/ directory missing`), либо поддерживать локализацию (русский язык) через флаг `--lang` или переменную окружения `LANG`.
+Unresolved:
+Whether terminal diagnostic messages should remain strictly in English (following the uniform format `[ERROR] [FISS-R001] FISS/ directory missing`) or support localization (e.g., Russian) via a `--lang` flag or `LANG` environment variable.
 
-Почему важно:
-Затрагивает стабильность парсинга вывода скриптами, читаемость сообщений русскоязычными разработчиками и архитектуру пакета сообщений об ошибках.
+Why it matters:
+Affects deterministic output parsing in automation scripts, developer readability across regions, and error catalog package architecture.
 
-Источник:
-Анализ пользовательского опыта и требований к выводу CLI.
+Origin:
+User experience evaluation and CLI output format requirements.
 
-Пересмотреть если:
-Формирование спецификации на систему репортеров и текстового вывода.
+Revisit if:
+Specification and implementation of CLI text reporter and error message catalog.
