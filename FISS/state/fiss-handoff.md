@@ -2,8 +2,8 @@
 
 task: https://taiga.vorozhko.ru/project/vorozhkoru/us/3 (User Story #3: Валидация базовой структуры корня FISS (Root Structure MVP))
 canonical tracker: https://taiga.vorozhko.ru/
-task status: ready_for_test
-fiss synchronization: pending
+task status: completed
+fiss synchronization: synchronized
 
 ## Context & Baseline
 - **Previous Story:** Story #2 (Infra & CLI skeleton) successfully completed, accepted, and merged into `main` (`810d542`).
@@ -19,8 +19,9 @@ fiss synchronization: pending
   - `FISS/state/risks.md`: registered core architectural and system risks (`[RISK-001]` external FISS standard drift, `[RISK-002]` cross-platform filesystem case sensitivity, `[RISK-003]` symlink traversal loops and boundary escapes).
   - `FISS/state/open-questions.md`: recorded active technical uncertainties (`[OQ-001]` external and circular symlink handling strategy, `[OQ-002]` machine-readable JSON schema SARIF vs custom format, `[OQ-003]` diagnostic error message localization).
   - `FISS/state/INDEX.md`: added navigation entries for `risks.md` and `open-questions.md` with precise `Read when:` condition markers.
+  - `.githooks/pre-push`, `Makefile`: implemented and automated git pre-push hook guarding protected branches (`main`, `master`, `feature/*`, `bugfix/*`, `hotfix/*`, `fix/*`) against un-synchronized FISS state.
 - **No persistence:**
   - Test suites and fixtures: self-verifiable implementation details covered by automated tests.
   - Subject concepts and glossary: excluded from duplication in `knowledge/subject/` because the canonical external source is the official FISS v1.0.0 specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`), already linked in `FISS/INDEX.md` and `rules.md`.
 - **Handoff Decision:**
-  - Project memory and operational state are fully synchronized with the codebase and requirements. Branch is ready for human review and subsequent merge into `main`.
+  - Project memory and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #4).
