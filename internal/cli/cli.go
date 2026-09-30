@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	"fiss-lint/internal/linter"
 	"fiss-lint/internal/model"
 )
 
@@ -81,7 +82,21 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 	if fs.NArg() > 0 {
 		targetPath = fs.Arg(0)
 	}
-	_ = targetPath
+
+	l := linter.New()
+	report, err := l.Lint(targetPath)
+	if err != nil {
+		fmt.Fprintf(stderr, "Error: %v\n", err)
+		return 1
+	}
+
+	for _, issue := range report.Issues {
+		fmt.Fprintln(stdout, issue.Format())
+	}
+
+	if report.HasErrors() {
+		return 1
+	}
 
 	return 0
 }

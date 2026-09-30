@@ -76,16 +76,62 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
-			name:         "default invocation without args",
+			name:         "default invocation without args in dir without FISS",
 			args:         []string{},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R001] .: directory FISS/ not found in project root",
+			},
+		},
+		{
+			name:         "fixture valid_minimal",
+			args:         []string{"../../testdata/valid_minimal"},
 			info:         testBuildInfo,
 			expectedCode: 0,
 		},
 		{
-			name:         "target path positional argument",
-			args:         []string{"/path/to/project"},
+			name:         "fixture missing_fiss",
+			args:         []string{"../../testdata/missing_fiss"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R001] .: directory FISS/ not found in project root",
+			},
+		},
+		{
+			name:         "fixture missing_bootstrap",
+			args:         []string{"../../testdata/missing_bootstrap"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R002] FISS: required file BOOTSTRAP.md not found",
+			},
+		},
+		{
+			name:         "fixture missing_links",
+			args:         []string{"../../testdata/missing_links"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R003] FISS/INDEX.md: missing link to BOOTSTRAP.md",
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+			},
+		},
+		{
+			name:         "self project repository root",
+			args:         []string{"../.."},
 			info:         testBuildInfo,
 			expectedCode: 0,
+		},
+		{
+			name:         "non-existent directory target",
+			args:         []string{"../../testdata/does_not_exist"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stderrContains: []string{
+				"Error: reading project root:",
+			},
 		},
 	}
 
