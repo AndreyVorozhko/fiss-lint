@@ -69,9 +69,10 @@ Or optionally with scope:
 
 Every user story and its constituent tasks follow a strict seven-stage lifecycle:
 
-1. **Branching (Ветвление):**
-   - Create a feature branch from `main`: `<type>/story-<id>/<slug>` based on the Taiga User Story.
-   - Example: `feature/story-2/infra`.
+1. **Branching & Handoff Gate (Ветвление и шлюз перехода):**
+   - **Transition Gate Check:** Перед началом любой новой задачи проверь `FISS/state/fiss-handoff.md`. Значение `fiss synchronization` ОБЯЗАНО быть `synchronized`. Если оно находится в состоянии `pending` или `unresolved`, НЕМЕДЛЕННО ОСТАНОВИ работу и эскалируй человеку.
+   - Создай тематическую ветку от `main`: `<type>/story-<id>/<slug>` на основе User Story в Taiga (пример: `feature/story-2/infra`).
+   - **Handoff Initialization:** Обнови `FISS/state/fiss-handoff.md`, указав ссылку на начинаемую историю, статус `task status: in_progress` и состояние синхронизации `fiss synchronization: pending`. Это переводит шлюз перехода в закрытое состояние на время активной работы. Зафиксируй эту инициализацию первым коммитом ветки: `chore: инициализирован handoff для Story #<id>`.
 
 2. **Planning & Architecture (Планирование и архитектурный дизайн):**
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
@@ -103,6 +104,7 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
 
 7. **Task Transition & Handoff (Закрытие и шлюз перехода):**
-   - Record the completed story in `FISS/state/fiss-handoff.md` using `fiss-maintain`.
-   - Transition state to `fiss synchronization: synchronized`.
-   - Satisfies the transition gate in `FISS/BOOTSTRAP.md`, allowing the next backlog story to begin.
+   - Record the completed story, durable context changes, and verification evidence in `FISS/state/fiss-handoff.md` using `fiss-maintain`.
+   - Transition state to `task status: completed` and `fiss synchronization: synchronized`.
+   - Зафиксируй завершение синхронизации коммитом: `chore: завершена синхронизация FISS для Story #<id>`.
+   - Satisfies the transition gate in `FISS/BOOTSTRAP.md`, reopening the transition gate for the next backlog story.
