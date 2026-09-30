@@ -25,22 +25,38 @@ fiss-lint/
 │   └── fiss-lint/
 │       └── main.go           # Application entry point
 ├── internal/
-│   ├── cli/                  # CLI flags, help, version parsing
-│   ├── model/                # Core domain types (Issue, Report, Severity)
-│   ├── parser/               # Markdown list scanner and Read when detector
-│   ├── linter/               # Rule evaluation engine
-│   └── reporter/             # Text (color) and JSON output formatters
+│   ├── cli/                  # CLI flags, help, version parsing and terminal reporting
+│   ├── model/                # Core domain types (Issue, Report, Severity, BuildInfo)
+│   └── linter/               # Rule evaluation engine and validation pipeline
+├── testdata/                 # Test suites and fixtures for CLI and rules
 ├── Makefile                  # Cross-platform build automation
 ├── go.mod                    # Module definition
 └── FISS/                     # Intellectual space of fiss-lint
 ```
 
+## Linter Engine & Pipeline Architecture
+The validation engine (`internal/linter`) executes a sequential, deterministic pipeline against the target directory:
+- **Pipeline Stages:**
+  1. `checkRootDir` (`FISS-R001`): Verifies existence and directory status of `FISS/`.
+     - *Short-circuit Invariant:* If `FISS/` is missing, the linter reports `FISS-R001` (Error) and immediately halts the pipeline, suppressing cascading errors from downstream file checks.
+  2. `checkMandatoryFiles` (`FISS-R002`): Verifies presence and regular file/symlink status of `FISS/INDEX.md` and `FISS/BOOTSTRAP.md` (strictly case-sensitive).
+  3. `checkIndexLinks` (`FISS-R003`, `FISS-R011`): Scans `FISS/INDEX.md` for mandatory link to `BOOTSTRAP.md` (`FISS-R003`, Error) and recommended link to the official standard website (`FISS-R011`, Warning).
+- **Diagnostics Aggregator:** Findings are recorded in a centralized `model.Report` containing structured `model.Issue` records, with total count of errors and warnings.
+
+## Implemented Rules (Root Structure MVP)
+- `FISS-R001` (Error): Project root must contain `FISS/` directory.
+- `FISS-R002` (Error): `FISS/` directory must contain `INDEX.md` and `BOOTSTRAP.md`.
+- `FISS-R003` (Error): `FISS/INDEX.md` must contain a link targeting `BOOTSTRAP.md`.
+- `FISS-R011` (Warning): `FISS/INDEX.md` should contain a reference to `https://fiss.vorozhko.ru`.
+*(Subsequent rules FISS-R004–R010, R012–R018 are scheduled for implementation in upcoming stories).*
+
 ## CLI Interface & Behavior
 - **Invocation:** `fiss-lint [flags] [target_path]`
 - **Default path:** Current working directory (`.`).
-- **Flags:**
+- **Supported Flags:**
   - `-h`, `--help`: Usage help and rule summary.
   - `-v`, `--version`: Version, commit, and build date.
+- **Planned Flags:**
   - `--format [text|json]`: Output format (default `text`).
   - `--strict`: Escalates warnings to errors (exit code `1`).
 - **Exit Codes:**

@@ -67,13 +67,13 @@ Or optionally with scope:
 
 ## Task Lifecycle
 
-Every user story and its constituent tasks follow a strict six-stage lifecycle:
+Every user story and its constituent tasks follow a strict seven-stage lifecycle:
 
-1. **Branching (Ветвление):**
+1. **Branching:**
    - Create a feature branch from `main`: `<type>/story-<id>/<slug>` based on the Taiga User Story.
    - Example: `feature/story-2/infra`.
 
-2. **Planning & Architecture (Планирование и архитектурный дизайн):**
+2. **Planning & Architecture:**
    - **Verification Against FISS Standard:** Audit the User Story statement, DoD, and rule definitions against the latest FISS v1.0.0 specification and Conformance Checklist to identify any outdated assumptions before planning.
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
    - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
@@ -81,7 +81,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
    - For module and package boundaries, apply `api-and-interface-design` and `software-architecture` (Clean Architecture, deep modules, Hyrum's Law).
    - If non-trivial architectural trade-offs arise, stress-test them with `doubt-driven-development`.
 
-3. **Execution & Coding Standards (Исполнение и разработка):**
+3. **Execution & Coding Standards:**
    - Sequentially execute plan steps using `executing-plans` (*Action → Evidence → Validation → Commit Checkpoint → User Confirmation*).
    - **Soft Deviations & Off-Track:** Record unexpected but necessary local adaptations in `_currenttask/off-track.md` and mirror them as `[Off-track]` tasks in Taiga per `FISS/overrides/planning.md`.
    - **Go Coding Rules:** Strictly follow `.agents/rules/go.md` and `golang-pro` (Effective Go, happy path left-aligned, error wrapping with `%w`, zero external runtime dependencies, no duplicate `package`).
@@ -89,36 +89,51 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
    - **Test-Driven Development:** Apply `test-driven-development` (TDD, red-green-refactor loop) for rule evaluation and parsing logic.
    - **Systematic Debugging:** If unexpected build or test failures occur, investigate root causes using `systematic-debugging` before proposing fixes.
 
-4. **Commit & Verification Gate (Верификация и фиксация изменений):**
+4. **Commit & Verification Gate:**
    - Apply `verification-before-completion`: no claims of completion or commits without fresh, observable evidence in terminal output (`go test`, `make build-all`).
    - Invoke `git-commit` with message format: `<type>: <summary> . T-<task_id>`.
    - Upon completing a Step, transition the corresponding Taiga Task to `Closed` status and post completion evidence, AI model identifier, and commit hash as a task comment. Tag the task with the model tag per `FISS/overrides/planning.md`.
    - Never accumulate uncommitted work across multiple Taiga tasks.
 
-5. **Agent Self-Review (Саморевью агентом):**
+5. **Agent Self-Review:**
    - Perform comprehensive technical verification before human handover using `project-review`.
    - Use `code-review-and-quality` for multi-axis review (correctness, readability, architecture, security, performance).
    - Apply `review-and-simplify-changes` to review the git diff, eliminate unnecessary complexity, and ensure code reuse.
    - Apply `improve-codebase-architecture` to verify module depth and run deletion tests.
    - Resolve all detected issues prior to human escalation.
 
-6. **Human Review Surface & Feedback (Человеческая приёмка):**
+6. **Human Review Surface & Feedback:**
    - Invoke `human-review-surface` to present a concise, evidence-backed surface for human inspection.
    - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
    - Upon successful human verification, the feature branch is ready for merge into `main`.
 
+7. **Handoff Gate & Intellectual Space Refresh:**
+   - Before completing the task and setting `fiss synchronization: synchronized`, invoke `fiss-maintain` to conduct the intellectual space refresh and execute the transition gate.
+   - Audit all 7 knowledge dimensions, delegating semantic capture to the corresponding specialized skills:
+     1. **Subject Knowledge:** (`subject-knowledge-refresh`);
+     2. **Project Knowledge:** (`project-knowledge-refresh`);
+     3. **Architectural Decisions (ADR):** (`adr-maintain`);
+     4. **Risks (Risk Register):** (`risk-register`);
+     5. **Open Questions:** (`open-questions-maintain`);
+     6. **Subject Terminology:** (`glossary-maintain`);
+     7. **Project Terminology:** (`glossary-maintain`).
+   - Classify all outcomes in `FISS/state/fiss-handoff.md` (`Capture here`, `Delegate`, `No persistence`) per `fiss-maintain`.
+   - Perform final structural and semantic validation of the intellectual space using `fiss-validate`.
+   - Close the handoff gate and transition state to `synchronized` via `fiss-maintain`.
+   - **Automated Enforcement (`pre-push`):** Push to protected branches (`main`, `master`, `feature/*`, `bugfix/*`, `hotfix/*`, `fix/*`) is strictly guarded by `.githooks/pre-push` (initialized via `make init-hooks`), rejecting `git push` if `fiss synchronization` is not `synchronized`.
+
 ## User Story Kanban Transitions
 
-User Stories transition through Taiga kanban columns strictly in sync with the six-stage task lifecycle, with clear boundaries between agent autonomy and human ownership:
+User Stories transition through Taiga kanban columns strictly in sync with the seven-stage task lifecycle, with clear boundaries between agent autonomy and human ownership:
 
 ```mermaid
 flowchart LR
-    New["New\n(Backlog)"] -->|Человек| Ready["Ready\n(Specified)"]
-    Ready -->|Агент| InProgress["In progress\n(Active dev)"]
-    InProgress -->|Агент| ReadyForTest["Ready for test\n(Human inspection)"]
-    ReadyForTest -->|Агент (доработка)| InProgress
-    ReadyForTest -->|Человек (мерж)| Done["Done\n(Accepted & merged)"]
-    Done -->|Человек| Archived["Archived\n(Milestone closed)"]
+    New["New\n(Backlog)"] -->|Human| Ready["Ready\n(Specified)"]
+    Ready -->|Agent| InProgress["In progress\n(Active dev)"]
+    InProgress -->|Agent| ReadyForTest["Ready for test\n(Human inspection)"]
+    ReadyForTest -->|Agent (rework)| InProgress
+    ReadyForTest -->|Human (merge & handoff)| Done["Done\n(Accepted & synchronized)"]
+    Done -->|Human| Archived["Archived\n(Milestone closed)"]
 ```
 
 ### Role Boundaries & Transition Rules
@@ -152,7 +167,8 @@ flowchart LR
    - **Criteria:**
      - Explicit human satisfaction with implementation and evidence.
      - Feature branch merged into `main` by the human.
-     - Context handoff verified.
+     - Context handoff verified: Stage 7 (*Handoff Gate & Intellectual Space Refresh*) completed via `fiss-maintain` and verified with `fiss-validate`.
+     - Handoff status transitioned to `task status: done`, `fiss synchronization: synchronized`.
    - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
 
 6. **`Done` → `Archived` — *Human action only*:**
