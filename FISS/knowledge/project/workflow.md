@@ -82,6 +82,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
 
 3. **Execution & Coding Standards (Исполнение и разработка):**
    - Sequentially execute plan steps using `executing-plans` (*Action → Evidence → Validation → Commit Checkpoint → User Confirmation*).
+   - **Soft Deviations & Off-Track:** Record unexpected but necessary local adaptations in `_currenttask/off-track.md` and mirror them as `[Off-track]` tasks in Taiga per `FISS/overrides/planning.md`.
    - **Go Coding Rules:** Strictly follow `.agents/rules/go.md` and `golang-pro` (Effective Go, happy path left-aligned, error wrapping with `%w`, zero external runtime dependencies, no duplicate `package`).
    - **Markdown Standards:** When implementing or validating Markdown parsing, follow `.agents/rules/markdown.md` (CommonMark 0.31.2, fenced code block isolation).
    - **Test-Driven Development:** Apply `test-driven-development` (TDD, red-green-refactor loop) for rule evaluation and parsing logic.

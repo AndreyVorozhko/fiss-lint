@@ -42,3 +42,27 @@ To maintain seamless alignment between the agent's operational plan in `_current
    - Upon executing a Step, obtaining verification evidence, and authoring the commit:
      - The corresponding Taiga Task MUST be transitioned to `Closed` status (`is_closed: true`).
      - A comment MUST be posted to the Task recording the completion status, commit hash, commit message, and verifiable evidence summary.
+
+### 5. Off-Track Work & Soft Deviation Protocol
+When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
+
+1. **Local Operational Artifact (`_currenttask/off-track.md`):**
+   - All Soft deviations MUST be documented in `_currenttask/off-track.md` following the template from `executing-plans/references/off-track-template.md`:
+     - Timestamp and title;
+     - Affected plan step or scope;
+     - Deviation description (what was actually done differently);
+     - Discovered constraints and rationale;
+     - Local solution and actual file modifications;
+     - Verification evidence and impact assessment.
+
+2. **Mirroring to Taiga as Off-Track Tasks:**
+   - Each distinct logical package of off-track work MUST be created as a dedicated Task under the active User Story in Taiga.
+   - **Task Subject:** MUST be prefixed with `[Off-track] ` followed by a concise descriptive title:
+     ```text
+     [Off-track] <Название выполненного действия / адаптации>
+     ```
+   - **Task Tag:** MUST include the tag `off-track`.
+   - **Task Description:** MUST include the structured off-track specification (Plan reference, Deviation, Discovered constraints, Solution, Rationale, Modified files, Impact).
+   - **Task Status & Evidence Comment:**
+     - The task is transitioned to `Closed` status (`is_closed: true`).
+     - A comment MUST be posted to the task containing completion status, commit hash(es), and verifiable evidence (test outputs, conformance checks).
