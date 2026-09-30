@@ -2,7 +2,7 @@
 
 task: https://taiga.vorozhko.ru/project/vorozhkoru/us/3 (User Story #3: Валидация базовой структуры корня FISS (Root Structure MVP))
 canonical tracker: https://taiga.vorozhko.ru/
-task status: in_progress
+task status: ready_for_test
 fiss synchronization: pending
 
 ## Context & Baseline
