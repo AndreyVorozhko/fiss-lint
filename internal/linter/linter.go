@@ -30,5 +30,11 @@ func (l *Linter) Lint(projectRoot string) (*model.Report, error) {
 		return report, nil
 	}
 
+	// Rule FISS-R002: Mandatory files INDEX.md and BOOTSTRAP.md in FISS/.
+	_, _, err = checkMandatoryFiles(projectRoot, report)
+	if err != nil {
+		return nil, err
+	}
+
 	return report, nil
 }
