@@ -27,3 +27,18 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 ### 3. Precondition: Evidence Before Commit
 - The commit action MUST NOT be executed until the Step's **Свидетельство (Evidence)** has been obtained and verified (e.g., successful build, passing unit tests, verified CLI output).
 - Committing incomplete, unverified, or broken intermediate states across multiple actions within a step is prohibited.
+
+### 4. Task Tracker (Taiga) Synchronization Protocol
+To maintain seamless alignment between the agent's operational plan in `_currenttask/plan.md` and the canonical task tracker (Taiga):
+
+1. **Plan Header to User Story Comment:**
+   - Once the implementation plan is prepared and agreed, the plan overview (Goal, Selected Approach, Constraints, Non-goals, Context references, and Step-to-Task mapping) MUST be posted as a comment to the parent User Story in Taiga.
+   - The canonical `description` of the User Story in Taiga MUST NOT be overwritten, preserving original acceptance criteria and business requirements intact.
+
+2. **Step Specification to Task Description:**
+   - Each fine-grained Taiga Task under the User Story MUST have its `description` populated with the technical specification of the corresponding Step from `_currenttask/plan.md` (Goal, Required reading, Modified files, Dependencies, Expected changes, Acceptance criteria, Checklist of actions).
+
+3. **Step Completion & Evidence in Task:**
+   - Upon executing a Step, obtaining verification evidence, and authoring the commit:
+     - The corresponding Taiga Task MUST be transitioned to `Closed` status (`is_closed: true`).
+     - A comment MUST be posted to the Task recording the completion status, commit hash, commit message, and verifiable evidence summary.

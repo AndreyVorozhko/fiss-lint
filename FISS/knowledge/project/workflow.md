@@ -76,6 +76,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
 2. **Planning & Architecture (Планирование и архитектурный дизайн):**
    - Translate user story requirements and Taiga tasks into an implementation plan in `_currenttask/plan.md` using `writing-plans`.
    - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
+   - Synchronize the plan with Taiga per `FISS/overrides/planning.md`: post plan header as a comment to the User Story, and populate each Taiga Task description with its step specification.
    - For module and package boundaries, apply `api-and-interface-design` and `software-architecture` (Clean Architecture, deep modules, Hyrum's Law).
    - If non-trivial architectural trade-offs arise, stress-test them with `doubt-driven-development`.
 
@@ -89,6 +90,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
 4. **Commit & Verification Gate (Верификация и фиксация изменений):**
    - Apply `verification-before-completion`: no claims of completion or commits without fresh, observable evidence in terminal output (`go test`, `make build-all`).
    - Invoke `git-commit` with message format: `<type>: <summary> . T-<task_id>`.
+   - Upon completing a Step, transition the corresponding Taiga Task to `Closed` status and post completion evidence and commit hash as a task comment.
    - Never accumulate uncommitted work across multiple Taiga tasks.
 
 5. **Agent Self-Review (Саморевью агентом):**
