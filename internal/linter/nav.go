@@ -159,9 +159,9 @@ func validateAllIndexes(projectRoot string, report *model.Report) error {
 			if openErr != nil {
 				return fmt.Errorf("opening %s: %w", relPath, openErr)
 			}
-			defer file.Close()
 
 			entries, parseErr := parseIndexNavEntries(file)
+			file.Close()
 			if parseErr != nil {
 				return fmt.Errorf("parsing %s: %w", relPath, parseErr)
 			}
