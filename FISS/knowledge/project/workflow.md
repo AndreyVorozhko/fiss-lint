@@ -67,7 +67,7 @@ Or optionally with scope:
 
 ## Task Lifecycle
 
-Every user story and its constituent tasks follow a strict six-stage lifecycle:
+Every user story and its constituent tasks follow a strict seven-stage lifecycle:
 
 1. **Branching (Ветвление):**
    - Create a feature branch from `main`: `<type>/story-<id>/<slug>` based on the Taiga User Story.
@@ -107,9 +107,30 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
    - When human feedback is received, apply `receiving-code-review` (rigorous technical validation and test verification, avoiding performative agreement).
    - Upon successful human verification, the feature branch is ready for merge into `main`.
 
+7. **Handoff Gate & Intellectual Space Refresh (Синхронизация FISS перед завершением задачи):**
+   - Перед тем как перевести статус в `FISS/state/fiss-handoff.md` в:
+     ```text
+     fiss synchronization: synchronized
+     ```
+     мы обязаны провести не только Human Review Surface, но и всесторонний чек-лист аудита интеллектуального пространства по 7 направлениям:
+     1. **Предметное знание (Subject Knowledge):** появилось ли новое предметное знание после выполнения и проверки текущей задачи? (`subject-knowledge-refresh`);
+     2. **Знание о проекте (Project Knowledge):** появилось ли новое знание о проекте (архитектура, тулчейн, инварианты, соглашения, gotchas)? (`project-knowledge-refresh`);
+     3. **Архитектурные решения (ADR):** появились ли новые архитектурные решения или компромиссы, требующие фиксации истории принятия решений? (`adr-maintain`);
+     4. **Риски (Risk Register):** появились ли новые риски после выполнения и проверки текущей задачи? (`risk-register`);
+     5. **Открытые вопросы (Open Questions):** появились ли новые открытые вопросы или нерешённые технические неопределённости? (`open-questions-maintain`);
+     6. **Термины в предметной области (Subject Terminology):** появились ли новые термины или разграничения понятий в предметной области? (`glossary-maintain`);
+     7. **Термины в проекте (Project Terminology):** появились ли новые термины или проектно-специфичные наименования? (`glossary-maintain`).
+   - Если что-то из этого появилось, необходимо внести это в интеллектуальное пространство проекта с помощью соответствующего специализированного навыка и навыка `fiss-maintain`.
+   - В `FISS/state/fiss-handoff.md` фиксируется обязательная классификация результатов:
+     - `Capture here`: обновлённые или добавленные артефакты в `FISS/`;
+     - `Delegate`: переданные в специализированные реестры знания;
+     - `No persistence`: результаты без сохранения в долгосрочной памяти с явным обоснованием.
+   - Проводится итоговая валидация интеллектуального пространства через `fiss-validate`.
+   - Только после прохождения аудита и интеграции всех знаний handoff-гейт закрывается и статус переводится в `fiss synchronization: synchronized`.
+
 ## User Story Kanban Transitions
 
-User Stories transition through Taiga kanban columns strictly in sync with the six-stage task lifecycle, with clear boundaries between agent autonomy and human ownership:
+User Stories transition through Taiga kanban columns strictly in sync with the seven-stage task lifecycle, with clear boundaries between agent autonomy and human ownership:
 
 ```mermaid
 flowchart LR
@@ -117,7 +138,7 @@ flowchart LR
     Ready -->|Агент| InProgress["In progress\n(Active dev)"]
     InProgress -->|Агент| ReadyForTest["Ready for test\n(Human inspection)"]
     ReadyForTest -->|Агент (доработка)| InProgress
-    ReadyForTest -->|Человек (мерж)| Done["Done\n(Accepted & merged)"]
+    ReadyForTest -->|Человек (мерж & handoff)| Done["Done\n(Accepted & synchronized)"]
     Done -->|Человек| Archived["Archived\n(Milestone closed)"]
 ```
 
@@ -152,7 +173,9 @@ flowchart LR
    - **Criteria:**
      - Explicit human satisfaction with implementation and evidence.
      - Feature branch merged into `main` by the human.
-     - Context handoff verified.
+     - Context handoff verified: проведён 7-пунктовый аудит изменений интеллектуального пространства (предметные и проектные знания, ADR, риски, открытые вопросы, термины предметной области и проекта), результаты интегрированы через соответствующие навыки и `fiss-maintain`.
+     - `fiss-validate` подтверждает полное соответствие пространства (`VERIFIED`).
+     - Handoff-статус переведён в `task status: done`, `fiss synchronization: synchronized`.
    - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
 
 6. **`Done` → `Archived` — *Human action only*:**
