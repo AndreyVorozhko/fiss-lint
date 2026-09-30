@@ -27,3 +27,57 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 ### 3. Precondition: Evidence Before Commit
 - The commit action MUST NOT be executed until the Step's **Свидетельство (Evidence)** has been obtained and verified (e.g., successful build, passing unit tests, verified CLI output).
 - Committing incomplete, unverified, or broken intermediate states across multiple actions within a step is prohibited.
+
+### 4. Task Tracker (Taiga) Synchronization Protocol
+To maintain seamless alignment between the agent's operational plan in `_currenttask/plan.md` and the canonical task tracker (Taiga):
+
+1. **Plan Header to User Story Comment:**
+   - Once the implementation plan is prepared and agreed, the plan overview (Goal, Selected Approach, Constraints, Non-goals, Context references, and Step-to-Task mapping) MUST be posted as a comment to the parent User Story in Taiga.
+   - The canonical `description` of the User Story in Taiga MUST NOT be overwritten, preserving original acceptance criteria and business requirements intact.
+
+2. **Step Specification to Task Description:**
+   - Each fine-grained Taiga Task under the User Story MUST have its `description` populated with the technical specification of the corresponding Step from `_currenttask/plan.md` (Goal, Required reading, Modified files, Dependencies, Expected changes, Acceptance criteria, Checklist of actions).
+
+3. **Step Completion & Evidence in Task:**
+   - Upon executing a Step, obtaining verification evidence, and authoring the commit:
+     - The corresponding Taiga Task MUST be transitioned to `Closed` status (`is_closed: true`).
+     - A comment MUST be posted to the Task recording the completion status, commit hash, commit message, and verifiable evidence summary.
+
+4. **User Story Kanban State Transitions:**
+   - **Active Development (Agent):** On taking the story into work (Stages 1–2), transition the User Story to `In progress` (`status: 23`) and set the assignee.
+   - **Review Gate (Agent):** Upon completing all constituent tasks, passing verification suite, and completing agent self-review (Stage 5), transition the User Story to `Ready for test` (`status: 24`).
+   - **Rework Loop (Agent):** If human feedback during Stage 6 requests revisions, transition the User Story back to `In progress`, perform fixes, and return to `Ready for test` upon obtaining fresh evidence.
+   - **Story Acceptance & Archival (Human Only):** The agent MUST NOT transition stories to `Done` or `Archived`. The transition to `Done` (`status: 25`, `is_closed: true`) and subsequent archival is executed exclusively by the human after independent verification and merging the feature branch into `main`.
+
+5. **AI Model Attribution:**
+   - In all completion comments posted to Taiga Tasks and User Stories, the agent MUST explicitly record the AI model used in the format:
+     ```markdown
+     **Модель:** <model_identifier>
+     ```
+     *(Example: `**Модель:** Gemini 3.8 Flash`)*.
+   - Each Task and User Story MUST be tagged with the model tag (e.g., `gemini-3.8-flash`) to enable kanban board filtering and model performance tracking.
+   - When the `AI Model` custom attribute is defined in the Taiga project settings, the agent MUST also populate this attribute via the API.
+
+### 5. Off-Track Work & Soft Deviation Protocol
+When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
+
+1. **Local Operational Artifact (`_currenttask/off-track.md`):**
+   - All Soft deviations MUST be documented in `_currenttask/off-track.md` following the template from `executing-plans/references/off-track-template.md`:
+     - Timestamp and title;
+     - Affected plan step or scope;
+     - Deviation description (what was actually done differently);
+     - Discovered constraints and rationale;
+     - Local solution and actual file modifications;
+     - Verification evidence and impact assessment.
+
+2. **Mirroring to Taiga as Off-Track Tasks:**
+   - Each distinct logical package of off-track work MUST be created as a dedicated Task under the active User Story in Taiga.
+   - **Task Subject:** MUST be prefixed with `[Off-track] ` followed by a concise descriptive title:
+     ```text
+     [Off-track] <Название выполненного действия / адаптации>
+     ```
+   - **Task Tag:** MUST include the tag `off-track`.
+   - **Task Description:** MUST include the structured off-track specification (Plan reference, Deviation, Discovered constraints, Solution, Rationale, Modified files, Impact).
+   - **Task Status & Evidence Comment:**
+     - The task is transitioned to `Closed` status (`is_closed: true`).
+     - A comment MUST be posted to the task containing completion status, commit hash(es), and verifiable evidence (test outputs, conformance checks).
