@@ -49,6 +49,15 @@ To maintain seamless alignment between the agent's operational plan in `_current
    - **Rework Loop (Agent):** If human feedback during Stage 6 requests revisions, transition the User Story back to `In progress`, perform fixes, and return to `Ready for test` upon obtaining fresh evidence.
    - **Story Acceptance & Archival (Human Only):** The agent MUST NOT transition stories to `Done` or `Archived`. The transition to `Done` (`status: 25`, `is_closed: true`) and subsequent archival is executed exclusively by the human after independent verification and merging the feature branch into `main`.
 
+5. **AI Model Attribution:**
+   - In all completion comments posted to Taiga Tasks and User Stories, the agent MUST explicitly record the AI model used in the format:
+     ```markdown
+     **Модель:** <model_identifier>
+     ```
+     *(Example: `**Модель:** Gemini 2.5 Pro`)*.
+   - Each Task and User Story MUST be tagged with the model tag (e.g., `gemini-2.5-pro`) to enable kanban board filtering and model performance tracking.
+   - When the `AI Model` custom attribute is defined in the Taiga project settings, the agent MUST also populate this attribute via the API.
+
 ### 5. Off-Track Work & Soft Deviation Protocol
 When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
 

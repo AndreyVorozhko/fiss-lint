@@ -91,7 +91,7 @@ Every user story and its constituent tasks follow a strict six-stage lifecycle:
 4. **Commit & Verification Gate (Верификация и фиксация изменений):**
    - Apply `verification-before-completion`: no claims of completion or commits without fresh, observable evidence in terminal output (`go test`, `make build-all`).
    - Invoke `git-commit` with message format: `<type>: <summary> . T-<task_id>`.
-   - Upon completing a Step, transition the corresponding Taiga Task to `Closed` status and post completion evidence and commit hash as a task comment.
+   - Upon completing a Step, transition the corresponding Taiga Task to `Closed` status and post completion evidence, AI model identifier, and commit hash as a task comment. Tag the task with the model tag per `FISS/overrides/planning.md`.
    - Never accumulate uncommitted work across multiple Taiga tasks.
 
 5. **Agent Self-Review (Саморевью агентом):**
