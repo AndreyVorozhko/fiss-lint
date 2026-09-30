@@ -119,6 +119,52 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
+			name:         "fixture invalid_nav_single_line",
+			args:         []string{"../../testdata/invalid_nav_single_line"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R005] FISS/INDEX.md:7: missing 'Read when:' condition for navigation entry",
+			},
+		},
+		{
+			name:         "fixture invalid_nav_indent",
+			args:         []string{"../../testdata/invalid_nav_indent"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R005] FISS/INDEX.md:8: invalid indentation for 'Read when:' condition (expected exactly 2 spaces)",
+			},
+		},
+		{
+			name:         "fixture invalid_nav_marker",
+			args:         []string{"../../testdata/invalid_nav_marker"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R005] FISS/INDEX.md:8: invalid read condition marker (must be exact 'Read when:')",
+			},
+		},
+		{
+			name:         "fixture invalid_nav_empty_condition",
+			args:         []string{"../../testdata/invalid_nav_empty_condition"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R005] FISS/INDEX.md:8: empty condition text in 'Read when:'",
+			},
+		},
+		{
+			name:         "fixture missing_bootstrap_condition",
+			args:         []string{"../../testdata/missing_bootstrap_condition"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R004] FISS/INDEX.md:3: link to BOOTSTRAP.md must have an attached read condition",
+				"[ERROR] [FISS-R005] FISS/INDEX.md:3: missing 'Read when:' condition for navigation entry",
+			},
+		},
+		{
 			name:         "self project repository root",
 			args:         []string{"../.."},
 			info:         testBuildInfo,
