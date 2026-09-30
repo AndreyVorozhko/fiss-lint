@@ -120,6 +120,7 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
    - Classify all outcomes in `FISS/state/fiss-handoff.md` (`Capture here`, `Delegate`, `No persistence`) per `fiss-maintain`.
    - Perform final structural and semantic validation of the intellectual space using `fiss-validate`.
    - Close the handoff gate and transition state to `synchronized` via `fiss-maintain`.
+   - **Automated Enforcement (`pre-push`):** Push to protected branches (`main`, `master`, `feature/*`) is strictly guarded by `.githooks/pre-push` (initialized via `make init-hooks`), rejecting `git push` if `fiss synchronization` is not `synchronized`.
 
 ## User Story Kanban Transitions
 
