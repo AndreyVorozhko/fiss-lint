@@ -91,3 +91,40 @@ Full test suite passing (`TestLinter_Lint_Topology_Valid`, `TestLinter_Lint_Topo
 
 Residual risk:
 Negligible. Broken symlinks are caught safely by `filepath.EvalSymlinks` and target directory boundary checks.
+
+---
+
+### [RISK-004] Agent Runtime Environment Missing `fiss-lint` Binary
+
+Status: Mitigated
+
+Risk:
+Agent execution halts or reports false failures if `fiss-lint` binary is missing from PATH in restricted or minimal CI/agent container environments.
+
+Condition / Cause:
+Agent runtime environments (e.g., Docker containers, restricted sandbox environments) may not have `fiss-lint` preinstalled in system PATH, and may lack root privileges, network access, or a Go compiler to execute `go install`.
+
+Impact:
+Skills cannot run mechanical validation, potentially leading agents into infinite retry loops or failing task handoffs.
+
+Context / Evidence:
+Identified during Story #43 architecture design for `fiss-validate` and `fiss-maintain` integration.
+
+Mitigation:
+Mitigate. Standardized a 4-step autonomous discovery ladder in both skills:
+1. Check `command -v fiss-lint`;
+2. Check local workspace build paths (`./bin/fiss-lint`, `/workspace/bin/fiss-lint`);
+3. Attempt `go install` if Go toolchain is available;
+4. Gracefully downgrade to `INSUFFICIENT_EVIDENCE` for Level 1 checks with actionable installation guidance, while proceeding with Level 2 semantic analysis without crashing.
+
+Trigger:
+Invocation of `fiss-validate` or `fiss-maintain` in an environment without `fiss-lint` in PATH.
+
+Review Signal:
+End-to-end verification in Story #43 (T-48) confirming graceful fallback and local binary detection.
+
+Resolution:
+Codified in `Establish` section of both `fiss-validate/SKILL.md` and `fiss-maintain/SKILL.md`, documented in `GOTCHAS.md` (Gotcha 10) and `DESIGN.md`.
+
+Residual risk:
+Low. If no binary can be run or built, semantic evaluation continues while mechanical status is reported as `INSUFFICIENT_EVIDENCE`.

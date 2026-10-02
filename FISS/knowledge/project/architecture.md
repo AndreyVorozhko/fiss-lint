@@ -91,3 +91,28 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
   - `1`: One or more `Error` issues detected (or warnings when `--strict` is set), or runtime filesystem error.
   - `2`: Invalid CLI flags or option values (e.g., unsupported format).
 
+## Agent Skills Integration Architecture
+
+`fiss-lint` serves as the shared deterministic validation engine for agentic skills (`ai-skills`), establishing a clean tri-partite separation of concerns:
+
+1. **`fiss-lint` (CLI Tool)**:
+   - High-speed, compiled binary executing Level 1 deterministic invariants (`FISS-R001` through `FISS-R018`).
+   - Zero-token execution, zero hallucination, strict Unix exit codes (`0`, `1`, `2`).
+   - Emits structured JSON diagnostic streams via `--format json`.
+2. **`fiss-validate` (Agent Skill)**:
+   - Read-only cognitive inspector.
+   - Autonomously provisions and invokes `fiss-lint --format json .` for mechanical verification.
+   - Evaluates Level 2 qualitative heuristics across the 7C principles (situational trigger clarity, absence of content leakage, domain classification, canonical drift, continuous maintenance mechanisms).
+   - Combines mechanical and semantic findings into a unified report and structured diagnostic payload.
+3. **`fiss-maintain` (Agent Skill)**:
+   - Operational mutator and continuity orchestrator.
+   - Preserves knowledge continuity across task boundaries, classifies durable outcomes (`Capture here`, `Delegate`, `No persistence`).
+   - Enforces the post-mutation verification gate by running `fiss-lint --strict <workspace>` before allowing task synchronization (`fiss synchronization: synchronized`).
+
+### Autonomous Discovery Protocol
+Both skills follow a resilient discovery ladder:
+1. `command -v fiss-lint` (global PATH).
+2. `./bin/fiss-lint` or `/workspace/bin/fiss-lint` (local workspace build).
+3. `go install github.com/AndreyVorozhko/fiss-lint/cmd/fiss-lint@latest` (when Go toolchain is available).
+4. Graceful fallback to `INSUFFICIENT_EVIDENCE` with installation guidance if automated provisioning is restricted by environment permissions.
+
