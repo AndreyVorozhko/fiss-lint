@@ -2,8 +2,8 @@
 
 task: https://taiga.vorozhko.ru/project/vorozhkoru/us/4 (User Story #4: Парсинг навигационных записей и проверка строгого формата Read when)
 canonical tracker: https://taiga.vorozhko.ru/
-task status: ready_for_test
-fiss synchronization: pending
+task status: completed
+fiss synchronization: synchronized
 
 ## Context & Baseline
 - **Previous Story:** Story #3 (Root Structure MVP) successfully completed, accepted, and merged into `main` (`40ab982`).
@@ -39,4 +39,7 @@ fiss synchronization: pending
 7. **Project Terminology (`glossary-maintain`):**
    - Internal types (`NavEntry`) are package-private/internal models with no cross-project terminology impact.
    - Classification: **No persistence**.
+
+- **Handoff Decision:**
+  - Project memory and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #5).
 
