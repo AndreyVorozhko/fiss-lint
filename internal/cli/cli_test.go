@@ -213,6 +213,57 @@ func TestRun(t *testing.T) {
 			expectedCode: 0,
 		},
 		{
+			name:         "fixture valid_topology",
+			args:         []string{"../../testdata/valid_topology"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+		},
+		{
+			name:         "fixture invalid_orphan_file",
+			args:         []string{"../../testdata/invalid_orphan_file"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R008] FISS/orphan.md: unreachable markdown file (orphan)",
+			},
+		},
+		{
+			name:         "fixture invalid_composite_area_missing_index",
+			args:         []string{"../../testdata/invalid_composite_area_missing_index"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R007] FISS/INDEX.md:5: composite area missing INDEX.md: FISS/empty_area",
+			},
+		},
+		{
+			name:         "fixture invalid_overrides_missing_index",
+			args:         []string{"../../testdata/invalid_overrides_missing_index"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R009] FISS/overrides: required file INDEX.md not found in overrides directory",
+			},
+		},
+		{
+			name:         "fixture invalid_overrides_unlinked",
+			args:         []string{"../../testdata/invalid_overrides_unlinked"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R009] FISS/INDEX.md: missing link to overrides/INDEX.md",
+			},
+		},
+		{
+			name:         "fixture invalid_overrides_condition",
+			args:         []string{"../../testdata/invalid_overrides_condition"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R009] FISS/INDEX.md:6: read condition for overrides must require reading before skill usage",
+			},
+		},
+		{
 			name:         "non-existent directory target",
 			args:         []string{"../../testdata/does_not_exist"},
 			info:         testBuildInfo,

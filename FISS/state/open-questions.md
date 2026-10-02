@@ -4,28 +4,6 @@ Canonical registry of unresolved technical uncertainties for the `fiss-lint` pro
 
 ## Active Uncertainties
 
-### [OQ-001] Symlink Handling Strategy for External and Circular Links
-
-Status:
-Active
-
-Unresolved:
-How the linter should handle symbolic links during recursive directory traversal (starting with Story #6):
-1. Should symlinks pointing outside the project root be ignored?
-2. Should external links be treated as link integrity violations?
-3. Which cycle detection mechanism should be adopted (canonical path resolution via `filepath.EvalSymlinks` or device/inode tracking via `os.SameFile`)?
-
-Why it matters:
-In repositories utilizing symlink farms (e.g., `.agents/skills/` or monorepos), improper symlink traversal will cause infinite loops or erroneous findings on third-party files.
-
-Origin:
-Filesystem traversal architecture discussion and risk analysis during Story #3 / Story #6.
-
-Revisit if:
-Design and implementation of recursive area validation begins in Story #6 (`FISS-R007`, `FISS-R008`).
-
----
-
 ### [OQ-002] Machine-Readable Output Schema (--format json)
 
 Status:
@@ -64,3 +42,15 @@ User experience evaluation and CLI output format requirements.
 
 Revisit if:
 Specification and implementation of CLI text reporter and error message catalog.
+
+---
+
+## Closure Notes
+
+### [OQ-001] Symlink Handling Strategy for External and Circular Links
+
+Исход:
+Resolved
+
+Закрыто через:
+Реализация алгоритма BFS обхода графа навигации в Story #6 (`internal/linter/topology.go`, коммиты `f655bd2`, `fd33b46`), использующая каноническое разрешение путей через `filepath.EvalSymlinks` (`visitedRealPaths`) и нормализацию относительных индексов (`visitedIndexes`). Внешние ссылки за пределы корня репозитория не включаются в граф FISS.

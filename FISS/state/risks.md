@@ -60,7 +60,7 @@ Closed in Story #5 for relative link targets. Retain as Active for upcoming glob
 
 ### [RISK-003] Symlink Loops & Filesystem Traversal Boundary Escapes
 
-Status: Active
+Status: Resolved
 
 Risk:
 Infinite recursion or unintended scanning outside the target repository boundary due to cyclic or external symbolic links.
@@ -75,10 +75,19 @@ Context / Evidence:
 In the `fiss-lint` repository itself, `.agents/skills/` contains symlinks targeting external repository paths.
 
 Mitigation:
-Mitigate. Track visited filesystem nodes (`device + inode`), restrict traversal strictly within target repository root boundaries, and ignore non-FISS hidden metadata directories.
+Mitigate. Track visited filesystem nodes and indexes, resolve symlinks to canonical paths via `filepath.EvalSymlinks`, restrict traversal strictly within target repository root boundaries, and ignore non-FISS hidden metadata directories.
 
 Trigger:
 Development of recursive directory scanner in Story #6.
 
 Review Signal:
-Architectural decision on directory traversal algorithm in Story #6.
+Closed in Story #6 with BFS cycle and symlink loop protection (`visitedIndexes` and `visitedRealPaths` via `filepath.EvalSymlinks`).
+
+Resolution:
+In `internal/linter/topology.go`, implemented BFS navigation traversal with dual cycle protection: relative path index set `visitedIndexes` and canonical path set `visitedRealPaths` resolved via `filepath.EvalSymlinks`.
+
+Evidence:
+Full test suite passing (`TestLinter_Lint_Topology_Valid`, `TestLinter_Lint_Topology_CyclicIndexes`), and self-audit on `fiss-lint` repository (containing symlinks in `.agents/skills/`) executing in <15ms without cycles or traversal leaks.
+
+Residual risk:
+Negligible. Broken symlinks are caught safely by `filepath.EvalSymlinks` and target directory boundary checks.
