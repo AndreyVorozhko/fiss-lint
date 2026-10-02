@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"fiss-lint/internal/model"
 )
 
 func TestBuildNavigationGraph_Linear(t *testing.T) {
@@ -204,3 +206,219 @@ func TestBuildNavigationGraph_MissingRootIndex(t *testing.T) {
 		t.Errorf("expected empty reachable files, got: %v", graph.ReachableFiles)
 	}
 }
+
+func TestCheckReachability_AllReachable(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	areaDir := filepath.Join(fissDir, "area")
+	if err := os.MkdirAll(areaDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Area](area/INDEX.md)
+  Read when: working in area
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "BOOTSTRAP.md"), []byte("# Bootstrap\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	areaIndex := `# Area Index
+- [Doc](doc.md)
+  Read when: doc
+`
+	if err := os.WriteFile(filepath.Join(areaDir, "INDEX.md"), []byte(areaIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(areaDir, "doc.md"), []byte("# Doc\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	graph, err := buildNavigationGraph(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected graph error: %v", err)
+	}
+
+	report := model.NewReport()
+	if err := checkReachability(tempDir, graph.ReachableFiles, report); err != nil {
+		t.Fatalf("unexpected checkReachability error: %v", err)
+	}
+
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+}
+
+func TestCheckReachability_OrphanFiles(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	subDir := filepath.Join(fissDir, "sub")
+	if err := os.MkdirAll(subDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "BOOTSTRAP.md"), []byte("# Bootstrap\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	// Orphan files
+	if err := os.WriteFile(filepath.Join(fissDir, "orphan.md"), []byte("# Orphan\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(subDir, "unlinked.md"), []byte("# Unlinked\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	graph, err := buildNavigationGraph(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected graph error: %v", err)
+	}
+
+	report := model.NewReport()
+	if err := checkReachability(tempDir, graph.ReachableFiles, report); err != nil {
+		t.Fatalf("unexpected checkReachability error: %v", err)
+	}
+
+	if report.ErrorsCount() != 2 {
+		t.Fatalf("expected 2 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+
+	foundOrphan := false
+	foundUnlinked := false
+	for _, issue := range report.Issues {
+		if issue.RuleID != "FISS-R008" {
+			t.Errorf("expected rule FISS-R008, got %s", issue.RuleID)
+		}
+		if issue.Severity != model.SeverityError {
+			t.Errorf("expected error severity, got %v", issue.Severity)
+		}
+		if issue.FilePath == "FISS/orphan.md" {
+			foundOrphan = true
+		}
+		if issue.FilePath == "FISS/sub/unlinked.md" {
+			foundUnlinked = true
+		}
+	}
+
+	if !foundOrphan {
+		t.Errorf("expected orphan issue for FISS/orphan.md")
+	}
+	if !foundUnlinked {
+		t.Errorf("expected orphan issue for FISS/sub/unlinked.md")
+	}
+}
+
+func TestCheckReachability_UnlinkedAreaIndex(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	areaDir := filepath.Join(fissDir, "isolated_area")
+	if err := os.MkdirAll(areaDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "BOOTSTRAP.md"), []byte("# Bootstrap\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// isolated_area has INDEX.md and doc.md, but is not linked from Root Index
+	if err := os.WriteFile(filepath.Join(areaDir, "INDEX.md"), []byte("# Isolated Area\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(areaDir, "doc.md"), []byte("# Doc\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	graph, err := buildNavigationGraph(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected graph error: %v", err)
+	}
+
+	report := model.NewReport()
+	if err := checkReachability(tempDir, graph.ReachableFiles, report); err != nil {
+		t.Fatalf("unexpected checkReachability error: %v", err)
+	}
+
+	if report.ErrorsCount() != 2 {
+		t.Fatalf("expected 2 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+	for _, issue := range report.Issues {
+		if issue.RuleID != "FISS-R008" {
+			t.Errorf("expected rule FISS-R008, got %s", issue.RuleID)
+		}
+	}
+}
+
+func TestCheckReachability_IgnoreNonMarkdownAndHidden(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	hiddenDir := filepath.Join(fissDir, ".hidden")
+	if err := os.MkdirAll(hiddenDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "BOOTSTRAP.md"), []byte("# Bootstrap\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	// Hidden file, non-markdown file, and file inside hidden folder
+	if err := os.WriteFile(filepath.Join(fissDir, ".gitkeep"), []byte(""), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "image.png"), []byte("binary"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(hiddenDir, "secret.md"), []byte("# Secret\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	graph, err := buildNavigationGraph(tempDir)
+	if err != nil {
+		t.Fatalf("unexpected graph error: %v", err)
+	}
+
+	report := model.NewReport()
+	if err := checkReachability(tempDir, graph.ReachableFiles, report); err != nil {
+		t.Fatalf("unexpected checkReachability error: %v", err)
+	}
+
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+}
+
+func TestCheckReachability_MissingFissDir(t *testing.T) {
+	tempDir := t.TempDir()
+	report := model.NewReport()
+	if err := checkReachability(tempDir, nil, report); err != nil {
+		t.Fatalf("unexpected error on missing FISS dir: %v", err)
+	}
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors, got %d", report.ErrorsCount())
+	}
+}
+

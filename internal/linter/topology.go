@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"fiss-lint/internal/model"
 )
 
 // NavigationGraph represents the traversed navigation graph of a FISS intellectual space.
@@ -138,4 +140,73 @@ func buildNavigationGraph(projectRoot string) (*NavigationGraph, error) {
 	}
 
 	return graph, nil
+}
+
+// checkReachability walks the FISS/ directory and verifies that every .md file is reachable
+// from the navigation graph starting at FISS/INDEX.md (FISS-R008).
+// Any unreachable Markdown file is reported as an error.
+func checkReachability(projectRoot string, reachableFiles map[string]bool, report *model.Report) error {
+	if projectRoot == "" {
+		projectRoot = "."
+	}
+
+	fissDir := filepath.Join(projectRoot, "FISS")
+	if _, err := os.Stat(fissDir); os.IsNotExist(err) {
+		return nil
+	}
+
+	return filepath.WalkDir(fissDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil
+			}
+			return err
+		}
+
+		if strings.HasPrefix(d.Name(), ".") {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		// Check if it's a markdown file
+		if !strings.HasSuffix(strings.ToLower(d.Name()), ".md") {
+			return nil
+		}
+
+		// If it's a symlink, verify if target is a directory
+		if d.Type()&os.ModeSymlink != 0 {
+			info, statErr := os.Stat(path)
+			if statErr != nil {
+				// Broken symlink; skip
+				return nil
+			}
+			if info.IsDir() {
+				return nil
+			}
+		}
+
+		relPath, relErr := filepath.Rel(projectRoot, path)
+		if relErr != nil {
+			relPath = path
+		}
+		relPath = filepath.ToSlash(filepath.Clean(relPath))
+
+		if reachableFiles == nil || !reachableFiles[relPath] {
+			report.Add(model.Issue{
+				RuleID:   "FISS-R008",
+				Severity: model.SeverityError,
+				FilePath: relPath,
+				Line:     0,
+				Message:  "unreachable markdown file (orphan)",
+			})
+		}
+
+		return nil
+	})
 }
