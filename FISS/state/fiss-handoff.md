@@ -1,16 +1,16 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/8 (User Story #8: Машиночитаемый формат (--format json) и режим --strict для CI/CD)
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/43 (User Story #43: Интеграция fiss-lint в навыки fiss-maintain и fiss-validate)
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #7 (Verification of root agent instructions AGENTS.md, CLAUDE.md, .cursorrules, QWEN.md for FISS-R010) successfully completed, accepted, and merged into `main` (`8e52e0e`).
-- **Target Story:** User Story #8 (Taiga Ref: 8, ID: 55) — "Машиночитаемый формат (--format json) и режим --strict для CI/CD".
-- **Branch:** `feature/story-8/json-and-strict`.
-- **Pre-Planning Verification:** Story #8 scope, DoD (flags `--format [text|json]`, `--strict`, target path, CI/CD integration docs) and resolution of `[OQ-002]` audited against FISS v1.0.0 normative specification and Conformance Checklist.
-- **Verification:** All unit and integration tests passing (`go test -count=1 ./...`, 100% PASS), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures (`testdata/warning_only`, `testdata/valid_minimal`, `testdata/invalid_*`) and self repository root (0 errors, exit code 0). Accepted by human reviewer without objections.
+- **Previous Story:** Story #8 (Machine-readable format `--format json` and `--strict` mode) successfully completed, accepted, and merged into `main` (`69a66c2`).
+- **Target Story:** User Story #43 (Taiga Ref: 43, ID: 56) — "Интеграция fiss-lint в навыки fiss-maintain и fiss-validate".
+- **Branch:** `feature/story-43/skill-integration`.
+- **Pre-Planning Verification:** Story #43 scope and DoD (detection/installation of `fiss-lint`, removal of redundant mechanical checks, delegation of deterministic verification to `fiss-lint`) audited against FISS v1.0.0 normative specification, Conformance Checklist, and skills architecture.
+- **Verification:** Completed. All 5 tasks closed, end-to-end verification script `scripts/verify-skills-integration.sh` passed, exit code 0.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
@@ -20,25 +20,24 @@ fiss synchronization: synchronized
    - Classification: **No persistence**.
 2. **Project Knowledge (`project-knowledge-refresh`):**
    - Updated `FISS/knowledge/project/architecture.md`:
-     - Documented supported flags `--format [text|json]` and `--strict`.
-     - Documented `Reporter` interface abstraction (`internal/cli/reporter.go`), `JSONReporter` and `TextReporter`.
-     - Documented updated CLI exit codes (`0`, `1`, `2`).
+     - Documented Agent Skills Integration Architecture (tri-partite model: `fiss-lint` mechanical engine, `fiss-validate` cognitive inspector, `fiss-maintain` operational mutator).
+     - Documented autonomous discovery and installation protocol.
    - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Selected and implemented flat JSON report schema (`issues` + `summary`) based on `model.Report` with empty slice serialization (`"issues": []`). Decoupled formatting from CLI execution via `Reporter` interface.
-   - Classification: **No persistence** (documented in architecture and closed `[OQ-002]`).
+   - Codified decision on delegating deterministic Level 1 verification to `fiss-lint` CLI and eliminating duplicated AST parsing / code-fence stripping from skills.
+   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `ai-skills` META.md).
 4. **Risks (`risk-register`):**
-   - Audited risk register `FISS/state/risks.md`. No new project risks identified. Flags processing and format validation are isolated in `internal/cli`.
-   - Classification: **No persistence**.
+   - Logged and mitigated `[RISK-004]` (Agent Runtime Environment Missing `fiss-lint` Binary) in `FISS/state/risks.md`.
+   - Classification: **Capture here** (`FISS/state/risks.md`).
 5. **Open Questions (`open-questions-maintain`):**
-   - Closed `[OQ-002]` (Machine-Readable Output Schema) in `FISS/state/open-questions.md` as resolved. `[OQ-003]` (Diagnostic Error Message Localization) remains active.
-   - Classification: **Capture here** (`FISS/state/open-questions.md`).
+   - No new unresolved questions generated. Existing `[OQ-003]` remains active.
+   - Classification: **No persistence**.
 6. **Subject Terminology (`glossary-maintain`):**
-   - Output and severity concepts follow FISS standard.
+   - FISS standard concepts unchanged.
    - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Standard CLI flag names (`--format`, `--strict`) and reporter types follow conventions.
+   - Tri-partite architecture concepts aligned across documentation and skills.
    - Classification: **No persistence**.
 
 - **Handoff Decision:**
-  - Project memory, architecture, open questions, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task.
+  - Project memory, architecture, risk register, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for acceptance and merge.

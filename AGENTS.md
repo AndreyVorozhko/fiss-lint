@@ -6,4 +6,14 @@ Before beginning any task or work on the project, agents MUST navigate to and re
 - [FISS Index](FISS/INDEX.md)
   and strictly read [Bootstrap Context](FISS/BOOTSTRAP.md) before starting project work.
 
-All operational artifacts for the current task are located in `_currenttask/`.
+## Operational Artifacts & Task Tracking
+
+Operational artifacts (intent maps, statements, specifications, plans, review rules, off-track notes) are temporary working files during task execution.
+If an operational artifact exists, it MUST be preserved in Taiga in a convenient form — as a comment or attachment to the corresponding User Story or Task.
+It is strictly prohibited to reference `_currenttask/` anywhere in persistent documentation, FISS spaces, or handoffs, as it contains only transient files.
+
+## Language Policy
+
+- All operational artifacts (intent maps, statements, specifications, plans, review rules, off-track notes) MUST be authored in Russian.
+- All tracking and management in Taiga (User Stories, Tasks, titles, descriptions, status notes, and comments) MUST be conducted in Russian.
+
