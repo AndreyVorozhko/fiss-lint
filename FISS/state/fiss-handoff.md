@@ -1,27 +1,45 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/3 (User Story #3: Валидация базовой структуры корня FISS (Root Structure MVP))
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/4 (User Story #4: Парсинг навигационных записей и проверка строгого формата Read when)
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #2 (Infra & CLI skeleton) successfully completed, accepted, and merged into `main` (`810d542`).
-- **Target Story:** User Story #3 (Taiga Ref: 3, ID: 50) — "Валидация базовой структуры корня FISS (Root Structure MVP)".
-- **Branch:** `feature/story-3/root-structure-mvp`.
-- **Pre-Planning Verification:** Story #3 scope, DoD, and covered rules (`FISS-R001`, `FISS-R002`, `FISS-R003`, `FISS-R011`) audited against FISS v1.0.0 normative specification and Conformance Checklist.
-- **Verification:** All unit and integration tests passing (`go test -v ./...`, coverage 100%), `make clean && make build-all && make test` (100% PASS). CLI binary verified on test fixtures and self repository root.
+- **Previous Story:** Story #3 (Root Structure MVP) successfully completed, accepted, and merged into `main` (`40ab982`).
+- **Target Story:** User Story #4 (Taiga Ref: 4, ID: 51) — "Парсинг навигационных записей и проверка строгого формата Read when".
+- **Branch:** `feature/story-4/read-when-format`.
+- **Pre-Planning Verification:** Story #4 scope, DoD, and covered rules (`FISS-R004`, `FISS-R005`) audited against FISS v1.0.0. Obsolete localization criterion #4 removed from Taiga, Task 101 deleted.
+- **Verification:** All unit and integration tests passing (`go test -v ./...`, statement coverage > 93%), `make clean && make build-all && make test` (100% PASS). CLI binary verified on 5 invalid fixtures and self repository root. Ready for human verification.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
-- **Capture here:**
-  - `FISS/knowledge/project/architecture.md`: eliminated structural drift (removed non-existent `internal/parser` and `internal/reporter` packages, documented actual package layout `cli`, `model`, `linter`), documented validation pipeline architecture and short-circuit invariant on missing `FISS/` directory (`FISS-R001`), recorded implementation status of MVP rules (`FISS-R001`, `FISS-R002`, `FISS-R003`, `FISS-R011`), explicitly categorized supported vs. planned CLI flags.
-  - `FISS/knowledge/project/workflow.md`: adopted strict 7-stage task lifecycle with a mandatory 7-point intellectual space audit checklist (subject knowledge, project knowledge, ADRs, risks, open questions, subject terms, project terms) before closing handoff gate and setting `fiss synchronization: synchronized`.
-  - `FISS/state/risks.md`: registered core architectural and system risks (`[RISK-001]` external FISS standard drift, `[RISK-002]` cross-platform filesystem case sensitivity, `[RISK-003]` symlink traversal loops and boundary escapes).
-  - `FISS/state/open-questions.md`: recorded active technical uncertainties (`[OQ-001]` external and circular symlink handling strategy, `[OQ-002]` machine-readable JSON schema SARIF vs custom format, `[OQ-003]` diagnostic error message localization).
-  - `FISS/state/INDEX.md`: added navigation entries for `risks.md` and `open-questions.md` with precise `Read when:` condition markers.
-  - `.githooks/pre-push`, `Makefile`: implemented and automated git pre-push hook guarding protected branches (`main`, `master`, `feature/*`, `bugfix/*`, `hotfix/*`, `fix/*`) against un-synchronized FISS state.
-- **No persistence:**
-  - Test suites and fixtures: self-verifiable implementation details covered by automated tests.
-  - Subject concepts and glossary: excluded from duplication in `knowledge/subject/` because the canonical external source is the official FISS v1.0.0 specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`), already linked in `FISS/INDEX.md` and `rules.md`.
+
+### Outcome Classification
+1. **Subject Knowledge (`subject-knowledge-refresh`):**
+   - Rules `FISS-R004` and `FISS-R005` were already established in `FISS/knowledge/subject/rules.md`. Verified normative consistency with FISS v1.0.0. No drift detected.
+   - Classification: **No persistence** (already canonical).
+2. **Project Knowledge (`project-knowledge-refresh`):**
+   - Updated `FISS/knowledge/project/architecture.md` with:
+     - Documented `internal/linter/nav.go` in project structure.
+     - Documented pipeline stage 4 `validateAllIndexes` for recursive indexing, indentation, and format validation.
+     - Updated implemented rules list with `FISS-R004` and `FISS-R005`.
+   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
+3. **Architectural Decisions (`adr-maintain`):**
+   - Standard library line scanner `bufio.Scanner` and recursive index traversal `filepath.WalkDir` followed existing architecture without introducing new design tradeoffs or external dependencies.
+   - Classification: **No persistence** (routine implementation, no ADR required).
+4. **Risks (`risk-register`):**
+   - Audited against `FISS/state/risks.md`. `[RISK-001]` directly manifested in Story #4 pre-planning (removal of prohibited localization marker) and was successfully mitigated. `[RISK-002]` and `[RISK-003]` remain active for upcoming stories.
+   - Classification: **No persistence** (no new risks introduced).
+5. **Open Questions (`open-questions-maintain`):**
+   - Reviewed `FISS/state/open-questions.md`. `[OQ-001]`—`[OQ-003]` remain active.
+   - Classification: **No persistence** (no new open questions).
+6. **Subject Terminology (`glossary-maintain`):**
+   - Terms "Navigation Entry" and "Read when condition" strictly adhere to FISS v1.0.0 standard terminology.
+   - Classification: **No persistence**.
+7. **Project Terminology (`glossary-maintain`):**
+   - Internal types (`NavEntry`) are package-private/internal models with no cross-project terminology impact.
+   - Classification: **No persistence**.
+
 - **Handoff Decision:**
-  - Project memory and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #4).
+  - Project memory and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #5).
+
