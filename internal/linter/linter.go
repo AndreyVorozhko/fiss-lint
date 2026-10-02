@@ -66,6 +66,11 @@ func (l *Linter) Lint(projectRoot string) (*model.Report, error) {
 		if err := checkOverridesRule(projectRoot, report); err != nil {
 			return nil, err
 		}
+
+		// Rule FISS-R010: Agent instruction files directive check.
+		if err := checkAgentInstructions(projectRoot, report); err != nil {
+			return nil, err
+		}
 	}
 
 	return report, nil

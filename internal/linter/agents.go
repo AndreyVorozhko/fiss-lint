@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"fiss-lint/internal/model"
 )
 
 // knownAgentInstructionFiles contains root agent instruction files inspected by FISS-R010.
@@ -44,4 +47,42 @@ func findAgentInstructionFiles(projectRoot string) ([]string, error) {
 	}
 
 	return found, nil
+}
+
+// directsToFissIndex checks whether content contains a link or directive targeting FISS/INDEX.md or FISS/.
+func directsToFissIndex(content string) bool {
+	return strings.Contains(content, "FISS/INDEX.md") ||
+		strings.Contains(content, "FISS/index.md") ||
+		strings.Contains(content, "FISS/") ||
+		strings.Contains(content, "FISS\\INDEX.md") ||
+		strings.Contains(content, "FISS\\")
+}
+
+// checkAgentInstructions checks that any root agent instruction files direct to FISS/INDEX.md.
+// If any such file exists and does not reference FISS/INDEX.md or FISS/, it records a FISS-R010 error.
+func checkAgentInstructions(projectRoot string, report *model.Report) error {
+	agentFiles, err := findAgentInstructionFiles(projectRoot)
+	if err != nil {
+		return err
+	}
+
+	for _, filename := range agentFiles {
+		filePath := filepath.Join(projectRoot, filename)
+		content, err := os.ReadFile(filePath)
+		if err != nil {
+			return fmt.Errorf("reading agent instruction file %s: %w", filename, err)
+		}
+
+		if !directsToFissIndex(string(content)) {
+			report.Add(model.Issue{
+				RuleID:   "FISS-R010",
+				Severity: model.SeverityError,
+				FilePath: filename,
+				Line:     0,
+				Message:  "does not direct to FISS/INDEX.md",
+			})
+		}
+	}
+
+	return nil
 }
