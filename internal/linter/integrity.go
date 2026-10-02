@@ -254,6 +254,29 @@ func validateIndexLinksIntegrity(projectRoot, indexRelPath string, entries []Nav
 			continue
 		}
 
-		// isDir == true is handled in Step 3 (Task 105) for bare directories
+		// isDir == true: verify that the target directory contains an INDEX.md file (composite area).
+		indexInDirRel := filepath.ToSlash(filepath.Join(resolved.RelPathFromRoot, "INDEX.md"))
+		indexExists, indexIsDir, indexErr := checkPathExistsCaseSensitive(projectRoot, indexInDirRel)
+		if indexErr != nil {
+			report.Add(model.Issue{
+				RuleID:   "FISS-R006",
+				Severity: model.SeverityError,
+				FilePath: indexRelPath,
+				Line:     entry.Line,
+				Message:  fmt.Sprintf("checking target directory %q: %v", entry.Target, indexErr),
+			})
+			continue
+		}
+
+		if !indexExists || indexIsDir {
+			report.Add(model.Issue{
+				RuleID:   "FISS-R006",
+				Severity: model.SeverityError,
+				FilePath: indexRelPath,
+				Line:     entry.Line,
+				Message:  fmt.Sprintf("link targets a bare directory without INDEX.md: %s", entry.Target),
+			})
+			continue
+		}
 	}
 }

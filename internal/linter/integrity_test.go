@@ -259,13 +259,28 @@ func TestValidateIndexLinksIntegrity(t *testing.T) {
 	tempDir := t.TempDir()
 
 	fissDir := filepath.Join(tempDir, "FISS")
-	if err := os.MkdirAll(fissDir, 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(fissDir, "overrides"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(fissDir, "empty_dir"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(fissDir, "wrong_case_dir"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(fissDir, "index_as_dir", "INDEX.md"), 0755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte("# Index\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(fissDir, "BOOTSTRAP.md"), []byte("# Bootstrap\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "overrides", "INDEX.md"), []byte("# Overrides Index\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(fissDir, "wrong_case_dir", "index.md"), []byte("# Lowercase\n"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(fissDir, "notes.txt"), []byte("text file\n"), 0644); err != nil {
@@ -298,9 +313,21 @@ func TestValidateIndexLinksIntegrity(t *testing.T) {
 			wantIssueCode: "",
 		},
 		{
+			name:          "valid_composite_area_directory_link",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 11, Title: "Overrides", Target: "overrides"},
+			wantIssueCode: "",
+		},
+		{
+			name:          "valid_composite_area_directory_link_with_slash",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 12, Title: "Overrides", Target: "overrides/"},
+			wantIssueCode: "",
+		},
+		{
 			name:          "missing_file_triggers_fiss_r006",
 			indexRelPath:  "FISS/INDEX.md",
-			entry:         NavEntry{Line: 12, Title: "Missing", Target: "missing.md"},
+			entry:         NavEntry{Line: 13, Title: "Missing", Target: "missing.md"},
 			wantIssueCode: "FISS-R006",
 			wantInMsg:     "target file does not exist: missing.md",
 		},
@@ -319,16 +346,44 @@ func TestValidateIndexLinksIntegrity(t *testing.T) {
 			wantInMsg:     "link target must be a Markdown file (.md): notes.txt",
 		},
 		{
+			name:          "bare_directory_triggers_fiss_r006",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 19, Title: "Empty Dir", Target: "empty_dir"},
+			wantIssueCode: "FISS-R006",
+			wantInMsg:     "link targets a bare directory without INDEX.md: empty_dir",
+		},
+		{
+			name:          "bare_directory_with_slash_triggers_fiss_r006",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 20, Title: "Empty Dir Slash", Target: "empty_dir/"},
+			wantIssueCode: "FISS-R006",
+			wantInMsg:     "link targets a bare directory without INDEX.md: empty_dir/",
+		},
+		{
+			name:          "wrong_case_index_in_dir_triggers_fiss_r006",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 21, Title: "Wrong Case Index", Target: "wrong_case_dir"},
+			wantIssueCode: "FISS-R006",
+			wantInMsg:     "link targets a bare directory without INDEX.md: wrong_case_dir",
+		},
+		{
+			name:          "index_is_dir_triggers_fiss_r006",
+			indexRelPath:  "FISS/INDEX.md",
+			entry:         NavEntry{Line: 22, Title: "Index as Dir", Target: "index_as_dir"},
+			wantIssueCode: "FISS-R006",
+			wantInMsg:     "link targets a bare directory without INDEX.md: index_as_dir",
+		},
+		{
 			name:          "escaping_root_triggers_fiss_r006",
 			indexRelPath:  "FISS/INDEX.md",
-			entry:         NavEntry{Line: 20, Title: "Escape", Target: "../../outside.md"},
+			entry:         NavEntry{Line: 23, Title: "Escape", Target: "../../outside.md"},
 			wantIssueCode: "FISS-R006",
 			wantInMsg:     "link target escapes project root",
 		},
 		{
 			name:          "absolute_path_triggers_fiss_r006",
 			indexRelPath:  "FISS/INDEX.md",
-			entry:         NavEntry{Line: 22, Title: "Abs", Target: "/etc/passwd"},
+			entry:         NavEntry{Line: 24, Title: "Abs", Target: "/etc/passwd"},
 			wantIssueCode: "FISS-R006",
 			wantInMsg:     "link target must not be absolute",
 		},
