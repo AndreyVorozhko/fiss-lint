@@ -75,9 +75,9 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
 
 2. **Planning & Architecture:**
    - **Verification Against FISS Standard:** Audit the User Story statement, DoD, and rule definitions against the latest FISS v1.0.0 specification and Conformance Checklist to identify any outdated assumptions before planning.
-   - Translate user story requirements and Taiga tasks into an implementation plan using `writing-plans`, preserving the full plan and operational artifacts in Taiga (as User Story comment and Task descriptions). Never link or refer to `_currenttask/` in documentation as it contains transient working files.
+   - Translate user story requirements and Taiga tasks into an implementation plan using `writing-plans`, authoring all operational artifacts (`statement`, `specification`, `plan`) in Russian and preserving them in Taiga (as User Story comment and Task descriptions). Never link or refer to `_currenttask/` in documentation as it contains transient working files.
    - Adhere to `FISS/overrides/planning.md`: 1 Step = 1 Taiga Task with explicit `T-<task_id>` tag and mandatory step-level commit checkpoint.
-   - Synchronize the plan with Taiga per `FISS/overrides/planning.md`: post plan overview and operational artifacts (statement, specification, plan) as comments to the User Story, and populate each Taiga Task description with its step specification.
+   - Synchronize the plan with Taiga per `FISS/overrides/planning.md`: post plan overview and operational artifacts (statement, specification, plan) as comments to the User Story, and populate each Taiga Task description with its step specification. All content in Taiga MUST be written in Russian.
    - For module and package boundaries, apply `api-and-interface-design` and `software-architecture` (Clean Architecture, deep modules, Hyrum's Law).
    - If non-trivial architectural trade-offs arise, stress-test them with `doubt-driven-development`.
 
@@ -118,7 +118,7 @@ Every user story and its constituent tasks follow a strict seven-stage lifecycle
      6. **Subject Terminology:** (`glossary-maintain`);
      7. **Project Terminology:** (`glossary-maintain`).
    - Classify all outcomes in `FISS/state/fiss-handoff.md` (`Capture here`, `Delegate`, `No persistence`) per `fiss-maintain`.
-   - **Preservation of Operational Artifacts in Taiga:** Ensure that all operational artifacts (statement, specification, plan, off-track, review rules) created during the task lifecycle are preserved in Taiga in a convenient form — as comments or attachments to the User Story or relevant tasks. Referencing `_currenttask/` in FISS, handoffs, or commit messages is strictly prohibited.
+   - **Preservation of Operational Artifacts in Taiga:** Ensure that all operational artifacts (statement, specification, plan, off-track, review rules) created during the task lifecycle are authored in Russian and preserved in Taiga in a convenient form — as comments or attachments to the User Story or relevant tasks. Referencing `_currenttask/` in FISS, handoffs, or commit messages is strictly prohibited.
    - Perform final structural and semantic validation of the intellectual space using `fiss-validate`.
    - Close the handoff gate and transition state to `synchronized` via `fiss-maintain`.
    - **Automated Enforcement (`pre-push`):** Push to protected branches (`main`, `master`, `feature/*`, `bugfix/*`, `hotfix/*`, `fix/*`) is strictly guarded by `.githooks/pre-push` (initialized via `make init-hooks`), rejecting `git push` if `fiss synchronization` is not `synchronized`.
@@ -174,3 +174,7 @@ flowchart LR
 
 6. **`Done` → `Archived` — *Human action only*:**
    - Executed exclusively by the human upon sprint/milestone closing or board cleanup.
+
+7. **Language Invariant for Taiga:**
+   - All User Stories, Tasks, titles, descriptions, tags, and discussion/evidence comments in Taiga MUST be maintained in Russian.
+

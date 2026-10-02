@@ -94,3 +94,8 @@ When executing a story, necessary actions may emerge that were not anticipated i
 ### 7. Preservation of Operational Artifacts in Taiga
 - If an operational artifact exists or is created during work (e.g., `intent-map`, `statement`, `pre-analysis-report`, `specification`, `plan`, `off-track`, `review-rules`), it MUST be preserved in Taiga in a convenient form — as a comment or attachment to the corresponding User Story or Task.
 - It is strictly prohibited to reference `_currenttask/` anywhere in project documentation, FISS spaces, handoff artifacts, or commit messages, as `_currenttask/` contains only transient working files.
+
+### 8. Language Policy for Taiga and Operational Artifacts
+- **Operational Artifacts:** All operational task artifacts (`intent-map`, `statement`, `pre-analysis-report`, `specification`, `plan`, `off-track`, `review-rules`) MUST be authored in Russian.
+- **Taiga Management:** All records and communication in Taiga (User Story subjects, descriptions, tags, Task subjects, descriptions, completion comments, and discussions) MUST be maintained exclusively in Russian.
+

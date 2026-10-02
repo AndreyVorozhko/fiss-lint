@@ -14,8 +14,8 @@ It serves as a fast, deterministic gate for developers (CLI), CI/CD pipelines, p
 - **Read-Only Audit:** `fiss-lint` performs read-only checks with standard exit codes (`0` = clean, `1` = errors found). Modes like `--fix` and `init` are intentionally excluded.
 
 ## Canonical Sources
-- **Task & Issue Tracking:** Canonical task management is hosted in self-hosted [Taiga.io](https://taiga.io/) (Kanban mode). FISS does not duplicate the task tracker.
-- **Operational Task Artifacts:** Operational artifacts created during work (statement, specification, plan, off-track, review rules) MUST be preserved in Taiga in a convenient form — as comments or attachments to the corresponding User Story or Task. Referencing `_currenttask/` in persistent documentation, FISS spaces, or handoffs is strictly prohibited as it contains only temporary working files.
+- **Task & Issue Tracking:** Canonical task management is hosted in self-hosted [Taiga.io](https://taiga.io/) (Kanban mode). FISS does not duplicate the task tracker. All tracking and management in Taiga (User Stories, Tasks, subjects, descriptions, comments) MUST be maintained in Russian.
+- **Operational Task Artifacts:** Operational artifacts created during work (statement, specification, plan, off-track, review rules) MUST be authored in Russian and MUST be preserved in Taiga in a convenient form — as comments or attachments to the corresponding User Story or Task. Referencing `_currenttask/` in persistent documentation, FISS spaces, or handoffs is strictly prohibited as it contains only temporary working files.
 
 ## Task Transition Gate
 Work on any subsequent task MAY begin only when the preceding FISS synchronization state in `FISS/state/fiss-handoff.md` is `synchronized`. The states `pending` and `unresolved` strictly block the transition to the next task.
