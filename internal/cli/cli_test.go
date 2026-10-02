@@ -347,6 +347,52 @@ func TestRun(t *testing.T) {
 			expectedCode: 0,
 		},
 		{
+			name:         "warning_only project without strict returns exit code 0",
+			args:         []string{"../../testdata/warning_only"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+			stdoutContains: []string{
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+			},
+		},
+		{
+			name:         "warning_only project with strict returns exit code 1",
+			args:         []string{"--strict", "../../testdata/warning_only"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+			},
+		},
+		{
+			name:         "warning_only project with format json without strict returns exit code 0",
+			args:         []string{"--format", "json", "../../testdata/warning_only"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+			stdoutContains: []string{
+				`"rule_id": "FISS-R011"`,
+				`"severity": "WARNING"`,
+				`"file": "FISS/INDEX.md"`,
+				`"errors": 0`,
+				`"warnings": 1`,
+				`"total": 1`,
+			},
+		},
+		{
+			name:         "warning_only project with format json and strict returns exit code 1",
+			args:         []string{"--format", "json", "--strict", "../../testdata/warning_only"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				`"rule_id": "FISS-R011"`,
+				`"severity": "WARNING"`,
+				`"file": "FISS/INDEX.md"`,
+				`"errors": 0`,
+				`"warnings": 1`,
+				`"total": 1`,
+			},
+		},
+		{
 			name:         "non-existent directory target",
 			args:         []string{"../../testdata/does_not_exist"},
 			info:         testBuildInfo,
