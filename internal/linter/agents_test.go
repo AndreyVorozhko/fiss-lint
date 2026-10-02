@@ -34,7 +34,7 @@ func TestFindAgentInstructionFiles(t *testing.T) {
 			t.Fatalf("unexpected error: %v", err)
 		}
 
-		expected := []string{"AGENTS.md", "CLAUDE.md", ".cursorrules"}
+		expected := []string{"AGENTS.md", "CLAUDE.md", ".cursorrules", "QWEN.md"}
 		if !reflect.DeepEqual(found, expected) {
 			t.Errorf("expected %v, got %v", expected, found)
 		}

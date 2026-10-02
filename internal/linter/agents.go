@@ -10,7 +10,7 @@ import (
 )
 
 // knownAgentInstructionFiles contains root agent instruction files inspected by FISS-R010.
-var knownAgentInstructionFiles = []string{"AGENTS.md", "CLAUDE.md", ".cursorrules"}
+var knownAgentInstructionFiles = []string{"AGENTS.md", "CLAUDE.md", ".cursorrules", "QWEN.md"}
 
 // findAgentInstructionFiles searches projectRoot for known agent instruction files.
 // It verifies exact case matching against directory entries to ensure cross-platform
