@@ -8,7 +8,7 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 ## Override Rules for Implementation Planning
 
 ### 1. Pre-Planning: Verification Against Current FISS Standard
-- Before decomposing work or formulating the implementation plan in `_currenttask/plan.md`, the agent MUST verify the User Story description, scope, Definition of Done, and referenced validation rules against:
+- Before decomposing work or formulating the implementation plan, the agent MUST verify the User Story description, scope, Definition of Done, and referenced validation rules against:
   1. The normative FISS v1.0.0 specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`);
   2. The official FISS v1.0.0 Conformance Checklist (`https://fiss.vorozhko.ru/v1.0.0/en/conformance.html`);
   3. The deterministic rules registry in `FISS/knowledge/subject/rules.md`.
@@ -16,7 +16,7 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 - If discrepancies, obsolete requirements, or missing invariants are identified, the agent MUST explicitly highlight them during pre-analysis and align them with the human before committing to the implementation plan.
 
 ### 2. Step-to-Task 1:1 Mapping
-- When planning work decomposed into fine-grained Taiga tasks, each **Шаг (Step)** in `_currenttask/plan.md` MUST map to exactly one Taiga task.
+- When planning work decomposed into fine-grained Taiga tasks, each **Шаг (Step)** of the implementation plan MUST map to exactly one Taiga task.
 - The step header MUST explicitly include the Taiga task identifier in the format:
   ```markdown
   ### Шаг N (T-<task_id>): <Название задачи из Taiga>
@@ -37,14 +37,14 @@ In `fiss-lint`, canonical tasks in Taiga are fine-grained (atomic work packages)
 - Committing incomplete, unverified, or broken intermediate states across multiple actions within a step is prohibited.
 
 ### 5. Task Tracker (Taiga) Synchronization Protocol
-To maintain seamless alignment between the agent's operational plan in `_currenttask/plan.md` and the canonical task tracker (Taiga):
+To maintain seamless alignment between the agent's operational plan and the canonical task tracker (Taiga):
 
 1. **Plan Header to User Story Comment:**
    - Once the implementation plan is prepared and agreed, the plan overview (Goal, Selected Approach, Constraints, Non-goals, Context references, and Step-to-Task mapping) MUST be posted as a comment to the parent User Story in Taiga.
    - The canonical `description` of the User Story in Taiga MUST NOT be overwritten, preserving original acceptance criteria and business requirements intact.
 
 2. **Step Specification to Task Description:**
-   - Each fine-grained Taiga Task under the User Story MUST have its `description` populated with the technical specification of the corresponding Step from `_currenttask/plan.md` (Goal, Required reading, Modified files, Dependencies, Expected changes, Acceptance criteria, Checklist of actions).
+   - Each fine-grained Taiga Task under the User Story MUST have its `description` populated with the technical specification of the corresponding Step of the implementation plan (Goal, Required reading, Modified files, Dependencies, Expected changes, Acceptance criteria, Checklist of actions).
 
 3. **Step Completion & Evidence in Task:**
    - Upon executing a Step, obtaining verification evidence, and authoring the commit:
@@ -69,14 +69,15 @@ To maintain seamless alignment between the agent's operational plan in `_current
 ### 6. Off-Track Work & Soft Deviation Protocol
 When executing a story, necessary actions may emerge that were not anticipated in the original implementation plan (e.g., standard specification updates, rule catalog additions, tooling adaptations) but meet the criteria for **Soft deviation** under the `executing-plans` skill (they preserve the core decision, contracts, and scope):
 
-1. **Local Operational Artifact (`_currenttask/off-track.md`):**
-   - All Soft deviations MUST be documented in `_currenttask/off-track.md` following the template from `executing-plans/references/off-track-template.md`:
+1. **Documentation of Off-Track Deviations:**
+   - All Soft deviations MUST be documented following the template from `executing-plans/references/off-track-template.md`:
      - Timestamp and title;
      - Affected plan step or scope;
      - Deviation description (what was actually done differently);
      - Discovered constraints and rationale;
      - Local solution and actual file modifications;
      - Verification evidence and impact assessment.
+   - The deviation specification MUST be saved to Taiga (as an off-track task or comment) and MUST NOT be linked using ephemeral scratch directories.
 
 2. **Mirroring to Taiga as Off-Track Tasks:**
    - Each distinct logical package of off-track work MUST be created as a dedicated Task under the active User Story in Taiga.
@@ -89,3 +90,7 @@ When executing a story, necessary actions may emerge that were not anticipated i
    - **Task Status & Evidence Comment:**
      - The task is transitioned to `Closed` status (`is_closed: true`).
      - A comment MUST be posted to the task containing completion status, commit hash(es), and verifiable evidence (test outputs, conformance checks).
+
+### 7. Preservation of Operational Artifacts in Taiga
+- If an operational artifact exists or is created during work (e.g., `intent-map`, `statement`, `pre-analysis-report`, `specification`, `plan`, `off-track`, `review-rules`), it MUST be preserved in Taiga in a convenient form — as a comment or attachment to the corresponding User Story or Task.
+- It is strictly prohibited to reference `_currenttask/` anywhere in project documentation, FISS spaces, handoff artifacts, or commit messages, as `_currenttask/` contains only transient working files.
