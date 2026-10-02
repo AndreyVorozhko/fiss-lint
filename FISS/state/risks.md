@@ -45,16 +45,16 @@ Impact:
 A repository with non-conforming file casing passes validation on a developer's Windows workstation but fails in Linux CI/CD environments or for other users.
 
 Context / Evidence:
-File casing test cases in `internal/linter/root_test.go` and `internal/linter/integrity_test.go` demonstrated the necessity of checking exact file entry names by scanning directory entries (`os.ReadDir`). In Story #5, `checkPathExistsCaseSensitive` was implemented in `internal/linter/integrity.go` using component-by-component `os.ReadDir` traversal, successfully eliminating case-insensitive false negatives for all relative link targets and bare directory checks across Windows NTFS, macOS APFS, and Linux.
+File casing test cases in `internal/linter/root_test.go` and `internal/linter/integrity_test.go` demonstrated the necessity of checking exact file entry names by scanning directory entries (`os.ReadDir`). In Story #5, `checkPathExistsCaseSensitive` was implemented in `internal/linter/integrity.go` using component-by-component `os.ReadDir` traversal, successfully eliminating case-insensitive false negatives for all relative link targets and bare directory checks across Windows NTFS, macOS APFS, and Linux. In Story #7, `findAgentInstructionFiles` in `internal/linter/agents.go` was likewise implemented via `os.ReadDir` exact entry matching, ensuring lowercase files like `agents.md` do not inadvertently satisfy or trigger agent instruction checks on case-insensitive filesystems.
 
 Mitigation:
-Mitigate. Validate mandatory files and all relative link paths against directory entry lists (`os.ReadDir`) using exact string equality, resolving symlinks via `os.Stat` only when needed, and normalizing path targets using forward slashes `/`.
+Mitigate. Validate mandatory files, relative link paths, and agent instruction files against directory entry lists (`os.ReadDir`) using exact string equality, resolving symlinks via `os.Stat` only when needed, and normalizing path targets using forward slashes `/`.
 
 Trigger:
 Execution of cross-platform CI test suites on Windows/macOS runners.
 
 Review Signal:
-Closed in Story #5 for relative link targets. Retain as Active for upcoming global discovery in Story #6.
+Closed in Story #5 for relative link targets, and in Story #7 for root agent instruction files. Retain as Active for upcoming partition rules in Story #8.
 
 ---
 

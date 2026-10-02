@@ -1,44 +1,44 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/6 (User Story #6: Топология пространства: составные области, оверрайды и сироты (Reachability))
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/7 (User Story #7: Проверка корневых инструкций агентам AGENTS.md)
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #5 (Link integrity validation and bare directories prohibition) successfully completed, accepted, and merged into `main` (`b4aa0a1`).
-- **Target Story:** User Story #6 (Taiga Ref: 6, ID: 53) — "Топология пространства: составные области, оверрайды и сироты (Reachability)".
-- **Branch:** `feature/story-6/topology`.
-- **Pre-Planning Verification:** Story #6 scope, DoD, and covered rules (`FISS-R007`, `FISS-R008`, `FISS-R009`) audited against FISS v1.0.0 normative specification and Conformance Checklist.
-- **Verification:** All unit and integration tests passing (`go test -v ./...`, statement coverage 88.3% in `internal/linter`, 95.8% in `internal/cli`), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures and self repository root (0 errors, exit 0). Accepted by human reviewer.
+- **Previous Story:** Story #6 (Space topology, composite areas, overrides and reachability) successfully completed, accepted, and merged into `main` (`c9fa65d`).
+- **Target Story:** User Story #7 (Taiga Ref: 7, ID: 54) — "Проверка корневых инструкций агентам AGENTS.md".
+- **Branch:** `feature/story-7/agent-entry`.
+- **Pre-Planning Verification:** Story #7 scope, DoD, and covered rule (`FISS-R010`) audited against FISS v1.0.0 normative specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`, line 269) and Conformance Checklist.
+- **Verification:** All unit and integration tests passing (`go test -count=1 ./...`, 100% PASS), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures and self repository root (0 errors, exit code 0). Accepted by human reviewer with added support for `QWEN.md`.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
 ### Outcome Classification
 1. **Subject Knowledge (`subject-knowledge-refresh`):**
-   - Rules `FISS-R007`, `FISS-R008`, `FISS-R009` were already established in `FISS/knowledge/subject/rules.md`. Verified normative consistency with FISS v1.0.0. No drift detected.
+   - Rule `FISS-R010` was already established in `FISS/knowledge/subject/rules.md`. Verified normative consistency with FISS v1.0.0. No drift detected.
    - Classification: **No persistence** (already canonical).
 2. **Project Knowledge (`project-knowledge-refresh`):**
    - Updated `FISS/knowledge/project/architecture.md` with:
-     - Documented `internal/linter/topology.go` in project structure.
-     - Documented pipeline stage 5 `validateTopology` (BFS navigation graph traversal, cycle protection, orphan detection, composite area validation, overrides rule check).
-     - Added `FISS-R007`, `FISS-R008`, `FISS-R009` to implemented rules list.
+     - Documented `internal/linter/agents.go` in project structure.
+     - Documented pipeline stage 6 `checkAgentInstructions` (discovery of `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `QWEN.md`, exact case matching, directive validation).
+     - Added `FISS-R010` to implemented rules list.
    - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Implemented BFS traversal with dual cycle and symlink protection via `visitedIndexes` (relative path normalization) and `visitedRealPaths` (`filepath.EvalSymlinks`) without external runtime dependencies, adhering to Clean Architecture principles.
-   - Classification: **No persistence** (routine architectural choice following existing patterns; documented in architecture and risks).
+   - Routine implementation of separate scanner module `agents.go` with exact entry matching via `os.ReadDir` and clean integration into sequential pipeline stage 6, adhering to Clean Architecture principles.
+   - Classification: **No persistence** (routine architectural choice following established patterns; documented in architecture and risks).
 4. **Risks (`risk-register`):**
-   - Updated `FISS/state/risks.md`: `[RISK-003]` (Symlink loops and traversal escapes) transitioned from `Active` to `Resolved` with resolution details, test evidence, and residual risk assessment.
+   - Updated `FISS/state/risks.md`: `[RISK-002]` supplemented with evidence for `findAgentInstructionFiles` exact case matching on NTFS/APFS filesystems.
    - Classification: **Capture here** (`FISS/state/risks.md`).
 5. **Open Questions (`open-questions-maintain`):**
-   - Updated `FISS/state/open-questions.md`: moved `[OQ-001]` (Symlink handling strategy) to `## Closure Notes` with resolution details and evidence links.
-   - Classification: **Capture here** (`FISS/state/open-questions.md`).
+   - Reviewed `FISS/state/open-questions.md`. `[OQ-002]` and `[OQ-003]` remain active for upcoming stories (specifically Story #8 for `--format json`).
+   - Classification: **No persistence** (no new open questions).
 6. **Subject Terminology (`glossary-maintain`):**
-   - Terms "Composite Area", "Orphan Markdown File", "Reachability", and "Overrides Entry" adhere to FISS v1.0.0 standard terminology.
+   - Terms "Agent Entry Point" and "Agent Instructions" adhere to FISS v1.0.0 standard terminology.
    - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Internal helper methods and data structures (`buildNavigationGraph`, `checkReachability`, `checkCompositeAreas`, `checkOverridesRule`) have no cross-project terminology impact.
+   - Internal helper methods (`findAgentInstructionFiles`, `directsToFissIndex`, `checkAgentInstructions`) have no cross-project terminology impact.
    - Classification: **No persistence**.
 
 - **Handoff Decision:**
-  - Project memory, risks, open questions, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #7).
+  - Project memory, architecture, risks, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #8: Машиночитаемый формат (--format json) и режим --strict для CI/CD).

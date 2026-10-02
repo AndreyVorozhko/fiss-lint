@@ -264,6 +264,45 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
+			name:         "fixture valid_agents",
+			args:         []string{"../../testdata/valid_agents"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+		},
+		{
+			name:         "fixture valid_no_agents",
+			args:         []string{"../../testdata/valid_no_agents"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+		},
+		{
+			name:         "fixture invalid_agents_no_link",
+			args:         []string{"../../testdata/invalid_agents_no_link"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R010] AGENTS.md: does not direct to FISS/INDEX.md",
+			},
+		},
+		{
+			name:         "fixture invalid_claude_no_link",
+			args:         []string{"../../testdata/invalid_claude_no_link"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R010] CLAUDE.md: does not direct to FISS/INDEX.md",
+			},
+		},
+		{
+			name:         "fixture invalid_cursorrules_no_link",
+			args:         []string{"../../testdata/invalid_cursorrules_no_link"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R010] .cursorrules: does not direct to FISS/INDEX.md",
+			},
+		},
+		{
 			name:         "non-existent directory target",
 			args:         []string{"../../testdata/does_not_exist"},
 			info:         testBuildInfo,
