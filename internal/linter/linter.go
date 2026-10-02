@@ -43,7 +43,27 @@ func (l *Linter) Lint(projectRoot string) (*model.Report, error) {
 		}
 
 		// Rule FISS-R004 & FISS-R005: Validate navigation format (Read when:) across all INDEX.md files.
+		// Rule FISS-R006: Link integrity.
 		if err := validateAllIndexes(projectRoot, report); err != nil {
+			return nil, err
+		}
+
+		// Rule FISS-R007: Composite area validation.
+		if err := checkCompositeAreas(projectRoot, report); err != nil {
+			return nil, err
+		}
+
+		// Rule FISS-R008: Navigation graph reachability and orphan file detection.
+		graph, err := buildNavigationGraph(projectRoot)
+		if err != nil {
+			return nil, err
+		}
+		if err := checkReachability(projectRoot, graph.ReachableFiles, report); err != nil {
+			return nil, err
+		}
+
+		// Rule FISS-R009: Overrides directory and entry rules.
+		if err := checkOverridesRule(projectRoot, report); err != nil {
 			return nil, err
 		}
 	}

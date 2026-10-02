@@ -197,6 +197,11 @@ func checkReachability(projectRoot string, reachableFiles map[string]bool, repor
 		}
 		relPath = filepath.ToSlash(filepath.Clean(relPath))
 
+		// Root files (INDEX.md and BOOTSTRAP.md) are mandatory root files governed by FISS-R002 and FISS-R003.
+		if relPath == "FISS/INDEX.md" || relPath == "FISS/BOOTSTRAP.md" {
+			return nil
+		}
+
 		if reachableFiles == nil || !reachableFiles[relPath] {
 			report.Add(model.Issue{
 				RuleID:   "FISS-R008",
@@ -210,3 +215,211 @@ func checkReachability(projectRoot string, reachableFiles map[string]bool, repor
 		return nil
 	})
 }
+
+// extractConditionText extracts the condition string after 'Read when:' from a navigation entry.
+func extractConditionText(entry NavEntry) string {
+	if !entry.HasNextLine {
+		return ""
+	}
+	trimmed := strings.TrimSpace(entry.NextLineRaw)
+	const marker = "Read when:"
+	idx := strings.Index(trimmed, marker)
+	if idx != -1 {
+		return strings.TrimSpace(trimmed[idx+len(marker):])
+	}
+	return ""
+}
+
+// checkCompositeAreas validates rule FISS-R007:
+// A composite area (a directory representing an area referenced in navigation) MUST contain its own INDEX.md.
+func checkCompositeAreas(projectRoot string, report *model.Report) error {
+	if projectRoot == "" {
+		projectRoot = "."
+	}
+
+	fissDir := filepath.Join(projectRoot, "FISS")
+	if _, err := os.Stat(fissDir); os.IsNotExist(err) {
+		return nil
+	}
+
+	return filepath.WalkDir(fissDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil
+			}
+			return err
+		}
+
+		if d.IsDir() {
+			if strings.HasPrefix(d.Name(), ".") {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if d.Name() != "INDEX.md" {
+			return nil
+		}
+
+		relIndex, relErr := filepath.Rel(projectRoot, path)
+		if relErr != nil {
+			relIndex = path
+		}
+		relIndex = filepath.ToSlash(filepath.Clean(relIndex))
+
+		f, openErr := os.Open(path)
+		if openErr != nil {
+			return fmt.Errorf("opening %s: %w", relIndex, openErr)
+		}
+		entries, parseErr := parseIndexNavEntries(f)
+		f.Close()
+		if parseErr != nil {
+			return fmt.Errorf("parsing %s: %w", relIndex, parseErr)
+		}
+
+		for _, entry := range entries {
+			if isExternalURL(entry.Target) {
+				continue
+			}
+
+			resolved, resErr := resolveRelativeTarget(projectRoot, relIndex, entry.Target)
+			if resErr != nil || resolved.IsSelfAnchor {
+				continue
+			}
+
+			exists, isDir, checkErr := checkPathExistsCaseSensitive(projectRoot, resolved.RelPathFromRoot)
+			if checkErr != nil {
+				continue
+			}
+
+			// If target is directly a directory, verify it has an INDEX.md
+			if exists && isDir {
+				indexInDirRel := filepath.ToSlash(filepath.Join(resolved.RelPathFromRoot, "INDEX.md"))
+				idxExists, idxIsDir, _ := checkPathExistsCaseSensitive(projectRoot, indexInDirRel)
+				if !idxExists || idxIsDir {
+					report.Add(model.Issue{
+						RuleID:   "FISS-R007",
+						Severity: model.SeverityError,
+						FilePath: relIndex,
+						Line:     entry.Line,
+						Message:  fmt.Sprintf("composite area missing INDEX.md: %s", resolved.RelPathFromRoot),
+					})
+				}
+				continue
+			}
+
+			// If target was <dir>/INDEX.md, and <dir> exists on disk as a directory but INDEX.md is missing
+			if !exists && strings.HasSuffix(resolved.RelPathFromRoot, "/INDEX.md") {
+				dirRel := strings.TrimSuffix(resolved.RelPathFromRoot, "/INDEX.md")
+				dirExists, dirIsDir, _ := checkPathExistsCaseSensitive(projectRoot, dirRel)
+				if dirExists && dirIsDir {
+					report.Add(model.Issue{
+						RuleID:   "FISS-R007",
+						Severity: model.SeverityError,
+						FilePath: relIndex,
+						Line:     entry.Line,
+						Message:  fmt.Sprintf("composite area missing INDEX.md: %s", dirRel),
+					})
+				}
+			}
+		}
+
+		return nil
+	})
+}
+
+// checkOverridesRule validates rule FISS-R009:
+// If FISS/overrides/ exists, it MUST contain INDEX.md, and FISS/INDEX.md MUST link
+// to FISS/overrides/INDEX.md with a read condition requiring it before skill use.
+func checkOverridesRule(projectRoot string, report *model.Report) error {
+	if projectRoot == "" {
+		projectRoot = "."
+	}
+
+	overridesRel := "FISS/overrides"
+	exists, isDir, err := checkPathExistsCaseSensitive(projectRoot, overridesRel)
+	if err != nil {
+		return fmt.Errorf("checking %s: %w", overridesRel, err)
+	}
+	if !exists || !isDir {
+		// Overrides directory does not exist; rule is satisfied (overrides are optional).
+		return nil
+	}
+
+	// 1. FISS/overrides/ MUST contain INDEX.md
+	indexRel := "FISS/overrides/INDEX.md"
+	idxExists, idxIsDir, idxErr := checkPathExistsCaseSensitive(projectRoot, indexRel)
+	if idxErr != nil {
+		return fmt.Errorf("checking %s: %w", indexRel, idxErr)
+	}
+	if !idxExists || idxIsDir {
+		report.Add(model.Issue{
+			RuleID:   "FISS-R009",
+			Severity: model.SeverityError,
+			FilePath: "FISS/overrides",
+			Line:     0,
+			Message:  "required file INDEX.md not found in overrides directory",
+		})
+	}
+
+	// 2. FISS/INDEX.md MUST link to overrides/INDEX.md (or overrides/)
+	rootIndexRel := "FISS/INDEX.md"
+	rootFullPath := filepath.Join(projectRoot, filepath.FromSlash(rootIndexRel))
+	f, openErr := os.Open(rootFullPath)
+	if openErr != nil {
+		// If root index cannot be opened, root checks already handle it
+		return nil
+	}
+	defer f.Close()
+
+	entries, parseErr := parseIndexNavEntries(f)
+	if parseErr != nil {
+		return fmt.Errorf("parsing %s: %w", rootIndexRel, parseErr)
+	}
+
+	var overrideEntry *NavEntry
+	for _, entry := range entries {
+		if isExternalURL(entry.Target) {
+			continue
+		}
+		resolved, resErr := resolveRelativeTarget(projectRoot, rootIndexRel, entry.Target)
+		if resErr != nil || resolved.IsSelfAnchor {
+			continue
+		}
+
+		if resolved.RelPathFromRoot == "FISS/overrides/INDEX.md" || resolved.RelPathFromRoot == "FISS/overrides" {
+			overrideEntry = &entry
+			break
+		}
+	}
+
+	if overrideEntry == nil {
+		report.Add(model.Issue{
+			RuleID:   "FISS-R009",
+			Severity: model.SeverityError,
+			FilePath: "FISS/INDEX.md",
+			Line:     0,
+			Message:  "missing link to overrides/INDEX.md",
+		})
+		return nil
+	}
+
+	// 3. Read condition MUST require reading before skill use (contain "skill" case-insensitively)
+	condText := extractConditionText(*overrideEntry)
+	if !strings.Contains(strings.ToLower(condText), "skill") {
+		line := overrideEntry.Line
+		if overrideEntry.NextLineNum > 0 {
+			line = overrideEntry.NextLineNum
+		}
+		report.Add(model.Issue{
+			RuleID:   "FISS-R009",
+			Severity: model.SeverityError,
+			FilePath: "FISS/INDEX.md",
+			Line:     line,
+			Message:  "read condition for overrides must require reading before skill usage",
+		})
+	}
+
+	return nil
+}
+

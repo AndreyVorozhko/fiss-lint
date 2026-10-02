@@ -422,3 +422,216 @@ func TestCheckReachability_MissingFissDir(t *testing.T) {
 	}
 }
 
+func TestCheckCompositeAreas_Valid(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	areaDir := filepath.Join(fissDir, "area")
+	if err := os.MkdirAll(areaDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Area](area/INDEX.md)
+  Read when: working in area
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(areaDir, "INDEX.md"), []byte("# Area\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	report := model.NewReport()
+	if err := checkCompositeAreas(tempDir, report); err != nil {
+		t.Fatalf("unexpected checkCompositeAreas error: %v", err)
+	}
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+}
+
+func TestCheckCompositeAreas_MissingIndex(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	areaDir := filepath.Join(fissDir, "empty_area")
+	if err := os.MkdirAll(areaDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Bare Area](empty_area/)
+  Read when: working in bare area
+- [Missing Index Area](empty_area/INDEX.md)
+  Read when: working in area
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	report := model.NewReport()
+	if err := checkCompositeAreas(tempDir, report); err != nil {
+		t.Fatalf("unexpected checkCompositeAreas error: %v", err)
+	}
+	if report.ErrorsCount() != 2 {
+		t.Fatalf("expected 2 errors for FISS-R007, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+	for _, iss := range report.Issues {
+		if iss.RuleID != "FISS-R007" {
+			t.Errorf("expected rule FISS-R007, got %s", iss.RuleID)
+		}
+	}
+}
+
+func TestCheckOverridesRule_NoOverridesDir(t *testing.T) {
+	tempDir := t.TempDir()
+	report := model.NewReport()
+	if err := checkOverridesRule(tempDir, report); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors when overrides dir missing, got %d", report.ErrorsCount())
+	}
+}
+
+func TestCheckOverridesRule_Valid(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	overridesDir := filepath.Join(fissDir, "overrides")
+	if err := os.MkdirAll(overridesDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Overrides](overrides/INDEX.md)
+  Read when: before using any skill or workflow
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(overridesDir, "INDEX.md"), []byte("# Overrides\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	report := model.NewReport()
+	if err := checkOverridesRule(tempDir, report); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if report.ErrorsCount() != 0 {
+		t.Errorf("expected 0 errors, got %d: %v", report.ErrorsCount(), report.Issues)
+	}
+}
+
+func TestCheckOverridesRule_MissingIndex(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	overridesDir := filepath.Join(fissDir, "overrides")
+	if err := os.MkdirAll(overridesDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Overrides](overrides/INDEX.md)
+  Read when: before using any skill
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	// overrides/INDEX.md is NOT created
+
+	report := model.NewReport()
+	if err := checkOverridesRule(tempDir, report); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var foundMissingIndex bool
+	for _, iss := range report.Issues {
+		if iss.RuleID == "FISS-R009" && iss.Message == "required file INDEX.md not found in overrides directory" {
+			foundMissingIndex = true
+		}
+	}
+	if !foundMissingIndex {
+		t.Errorf("expected missing INDEX.md issue for overrides, got: %v", report.Issues)
+	}
+}
+
+func TestCheckOverridesRule_UnlinkedOverrides(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	overridesDir := filepath.Join(fissDir, "overrides")
+	if err := os.MkdirAll(overridesDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(overridesDir, "INDEX.md"), []byte("# Overrides\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	report := model.NewReport()
+	if err := checkOverridesRule(tempDir, report); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var foundUnlinked bool
+	for _, iss := range report.Issues {
+		if iss.RuleID == "FISS-R009" && iss.Message == "missing link to overrides/INDEX.md" {
+			foundUnlinked = true
+		}
+	}
+	if !foundUnlinked {
+		t.Errorf("expected missing link issue for overrides, got: %v", report.Issues)
+	}
+}
+
+func TestCheckOverridesRule_InvalidCondition(t *testing.T) {
+	tempDir := t.TempDir()
+	fissDir := filepath.Join(tempDir, "FISS")
+	overridesDir := filepath.Join(fissDir, "overrides")
+	if err := os.MkdirAll(overridesDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	rootIndex := `# Root Index
+- [Bootstrap](BOOTSTRAP.md)
+  Read when: always
+- [Overrides](overrides/INDEX.md)
+  Read when: when needing overrides
+`
+	if err := os.WriteFile(filepath.Join(fissDir, "INDEX.md"), []byte(rootIndex), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(overridesDir, "INDEX.md"), []byte("# Overrides\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	report := model.NewReport()
+	if err := checkOverridesRule(tempDir, report); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var foundBadCond bool
+	for _, iss := range report.Issues {
+		if iss.RuleID == "FISS-R009" && iss.Message == "read condition for overrides must require reading before skill usage" {
+			foundBadCond = true
+		}
+	}
+	if !foundBadCond {
+		t.Errorf("expected invalid condition issue for overrides, got: %v", report.Issues)
+	}
+}
+
+
