@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 
 	"fiss-lint/internal/model"
@@ -67,4 +68,22 @@ func (r *JSONReporter) Report(report *model.Report, w io.Writer) error {
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	return enc.Encode(jr)
+}
+
+// TextReporter formats validation issues as human-readable diagnostic lines.
+type TextReporter struct{}
+
+// NewTextReporter creates a new TextReporter instance.
+func NewTextReporter() Reporter {
+	return &TextReporter{}
+}
+
+// Report formats the report as line-by-line diagnostic text.
+func (r *TextReporter) Report(report *model.Report, w io.Writer) error {
+	for _, issue := range report.Issues {
+		if _, err := fmt.Fprintln(w, issue.Format()); err != nil {
+			return err
+		}
+	}
+	return nil
 }

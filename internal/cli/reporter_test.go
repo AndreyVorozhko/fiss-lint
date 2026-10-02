@@ -108,3 +108,60 @@ func TestJSONReporter_WriterError(t *testing.T) {
 		t.Fatal("expected error from failWriter, got nil")
 	}
 }
+
+func TestTextReporter_EmptyReport(t *testing.T) {
+	rep := model.NewReport()
+	reporter := NewTextReporter()
+
+	var buf bytes.Buffer
+	err := reporter.Report(rep, &buf)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if buf.Len() != 0 {
+		t.Errorf("expected empty output, got %q", buf.String())
+	}
+}
+
+func TestTextReporter_WithIssues(t *testing.T) {
+	rep := model.NewReport()
+	rep.Add(model.Issue{
+		RuleID:   "FISS-R001",
+		Severity: model.SeverityError,
+		FilePath: "FISS",
+		Line:     0,
+		Message:  "directory FISS/ not found",
+	})
+
+	reporter := NewTextReporter()
+
+	var buf bytes.Buffer
+	err := reporter.Report(rep, &buf)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	expected := "[ERROR] [FISS-R001] FISS: directory FISS/ not found\n"
+	if buf.String() != expected {
+		t.Errorf("expected %q, got %q", expected, buf.String())
+	}
+}
+
+func TestTextReporter_WriterError(t *testing.T) {
+	rep := model.NewReport()
+	rep.Add(model.Issue{
+		RuleID:   "FISS-R001",
+		Severity: model.SeverityError,
+		FilePath: "FISS",
+		Line:     0,
+		Message:  "directory FISS/ not found",
+	})
+	reporter := NewTextReporter()
+
+	err := reporter.Report(rep, &failWriter{})
+	if err == nil {
+		t.Fatal("expected error from failWriter, got nil")
+	}
+}
+

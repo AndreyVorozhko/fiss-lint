@@ -101,16 +101,17 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 		return 1
 	}
 
-	if format == "json" {
-		rep := NewJSONReporter()
-		if err := rep.Report(report, stdout); err != nil {
-			fmt.Fprintf(stderr, "Error: formatting report: %v\n", err)
-			return 1
-		}
-	} else {
-		for _, issue := range report.Issues {
-			fmt.Fprintln(stdout, issue.Format())
-		}
+	var rep Reporter
+	switch format {
+	case "json":
+		rep = NewJSONReporter()
+	default:
+		rep = NewTextReporter()
+	}
+
+	if err := rep.Report(report, stdout); err != nil {
+		fmt.Fprintf(stderr, "Error: formatting report: %v\n", err)
+		return 1
 	}
 
 	if report.HasErrors() {
