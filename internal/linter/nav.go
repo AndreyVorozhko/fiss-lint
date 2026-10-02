@@ -167,6 +167,7 @@ func validateAllIndexes(projectRoot string, report *model.Report) error {
 			}
 
 			validateNavEntries(relPath, entries, isRootIndex, report)
+			validateIndexLinksIntegrity(projectRoot, relPath, entries, report)
 		}
 		return nil
 	})

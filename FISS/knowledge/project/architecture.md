@@ -28,6 +28,7 @@ fiss-lint/
 │   ├── cli/                  # CLI flags, help, version parsing and terminal reporting
 │   ├── model/                # Core domain types (Issue, Report, Severity, BuildInfo)
 │   └── linter/               # Rule evaluation engine, file checks, and nav parsing
+│       ├── integrity.go      # Link integrity, case-sensitive FS checks, bare directories (FISS-R006)
 │       ├── linter.go         # Core engine and sequential pipeline orchestration
 │       ├── links.go          # Root index link checks (FISS-R003, FISS-R011)
 │       └── nav.go            # Nav parsing & Read when format checks (FISS-R004, FISS-R005)
@@ -44,17 +45,20 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
      - *Short-circuit Invariant:* If `FISS/` is missing, the linter reports `FISS-R001` (Error) and immediately halts the pipeline, suppressing cascading errors from downstream file checks.
   2. `checkMandatoryFiles` (`FISS-R002`): Verifies presence and regular file/symlink status of `FISS/INDEX.md` and `FISS/BOOTSTRAP.md` (strictly case-sensitive).
   3. `checkIndexLinks` (`FISS-R003`, `FISS-R011`): Scans `FISS/INDEX.md` for mandatory link to `BOOTSTRAP.md` (`FISS-R003`, Error) and recommended link to the official standard website (`FISS-R011`, Warning).
-  4. `validateAllIndexes` (`FISS-R004`, `FISS-R005`): Recursively traverses `FISS/` discovering all `INDEX.md` files via `filepath.WalkDir`. Uses `bufio.Scanner` to parse two-line navigation entries (`- [Title](target)\n  Read when: condition`) without regular expressions. Enforces exact two-space indentation, non-empty condition text, and the strict canonical English marker `Read when: ` without localization (`FISS-R005`, Error). In root `FISS/INDEX.md`, additionally verifies that the link targeting `BOOTSTRAP.md` is accompanied by an attached valid `Read when` condition (`FISS-R004`, Error).
+  4. `validateAllIndexes` (`FISS-R004`, `FISS-R005`, `FISS-R006`): Recursively traverses `FISS/` discovering all `INDEX.md` files via `filepath.WalkDir`.
+     - **Navigation Syntax:** Uses `bufio.Scanner` to parse two-line navigation entries (`- [Title](target)\n  Read when: condition`) without regular expressions. Enforces exact two-space indentation, non-empty condition text, and the strict canonical English marker `Read when: ` without localization (`FISS-R005`, Error). In root `FISS/INDEX.md`, additionally verifies that the link targeting `BOOTSTRAP.md` is accompanied by an attached valid `Read when` condition (`FISS-R004`, Error).
+     - **Link Integrity:** Calls `validateIndexLinksIntegrity` for each index (`FISS-R006`, Error). Resolves relative links relative to the containing directory of each `INDEX.md`, strips `#anchor` and `?query` fragments, excludes external URLs (`http://`, `https://`, `mailto:`, `ftp://`), enforces case-sensitive filesystem existence checks component-by-component via `os.ReadDir` (`checkPathExistsCaseSensitive`, resolving `[RISK-002]`), mandates `.md` extension on file targets, and requires `INDEX.md` within targeted directories, strictly prohibiting bare directories.
 - **Diagnostics Aggregator:** Findings are recorded in a centralized `model.Report` containing structured `model.Issue` records, with total count of errors and warnings.
 
-## Implemented Rules (Stories #3 & #4)
+## Implemented Rules (Stories #3, #4 & #5)
 - `FISS-R001` (Error): Project root must contain `FISS/` directory.
 - `FISS-R002` (Error): `FISS/` directory must contain `INDEX.md` and `BOOTSTRAP.md`.
 - `FISS-R003` (Error): `FISS/INDEX.md` must contain a link targeting `BOOTSTRAP.md`.
 - `FISS-R004` (Error): `FISS/INDEX.md` link to `BOOTSTRAP.md` must have an attached read condition requiring reading before project work.
 - `FISS-R005` (Error): Every navigation entry in any `INDEX.md` must follow the two-line format: `- [Title](path)` followed by `  Read when: <condition>` (exact non-localized marker, 2 spaces indentation, non-empty condition text).
+- `FISS-R006` (Error): Every relative link in an index must resolve to an existing physical `.md` file or `INDEX.md` of a composite area. Links to bare directories without `INDEX.md` are prohibited.
 - `FISS-R011` (Warning): `FISS/INDEX.md` should contain a reference to `https://fiss.vorozhko.ru`.
-*(Subsequent rules FISS-R006–R010, R012–R018 are scheduled for implementation in upcoming stories).*
+*(Subsequent rules FISS-R007–R010, R012–R018 are scheduled for implementation in upcoming stories).*
 
 ## CLI Interface & Behavior
 - **Invocation:** `fiss-lint [flags] [target_path]`
