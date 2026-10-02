@@ -32,6 +32,8 @@ func TestRun(t *testing.T) {
 				"Usage:",
 				"-h, --help",
 				"-v, --version",
+				"--format",
+				"--strict",
 				"FISS-R001",
 				"FISS-R018",
 			},
@@ -44,6 +46,8 @@ func TestRun(t *testing.T) {
 			stdoutContains: []string{
 				"Usage:",
 				"FISS Rules Summary:",
+				"--format",
+				"--strict",
 				"FISS-R001",
 				"FISS-R018",
 			},
@@ -301,6 +305,46 @@ func TestRun(t *testing.T) {
 			stdoutContains: []string{
 				"[ERROR] [FISS-R010] .cursorrules: does not direct to FISS/INDEX.md",
 			},
+		},
+		{
+			name:         "invalid format flag value",
+			args:         []string{"--format", "invalid"},
+			info:         testBuildInfo,
+			expectedCode: 2,
+			stderrContains: []string{
+				`Error: invalid format "invalid", must be "text" or "json"`,
+			},
+		},
+		{
+			name:         "format json on valid project",
+			args:         []string{"--format", "json", "../../testdata/valid_minimal"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+			stdoutContains: []string{
+				`"issues": []`,
+				`"summary": {`,
+				`"errors": 0`,
+				`"warnings": 0`,
+				`"total": 0`,
+			},
+		},
+		{
+			name:         "format json on invalid project",
+			args:         []string{"--format", "json", "../../testdata/invalid_agents_no_link"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				`"rule_id": "FISS-R010"`,
+				`"severity": "ERROR"`,
+				`"file": "AGENTS.md"`,
+				`"errors": 1`,
+			},
+		},
+		{
+			name:         "strict flag on valid project",
+			args:         []string{"--strict", "../../testdata/valid_minimal"},
+			info:         testBuildInfo,
+			expectedCode: 0,
 		},
 		{
 			name:         "non-existent directory target",
