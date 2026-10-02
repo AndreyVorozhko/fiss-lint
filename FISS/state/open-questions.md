@@ -4,28 +4,6 @@ Canonical registry of unresolved technical uncertainties for the `fiss-lint` pro
 
 ## Active Uncertainties
 
-### [OQ-002] Machine-Readable Output Schema (--format json)
-
-Status:
-Active
-
-Unresolved:
-Which JSON output schema should be supported by `--format json`:
-1. Proprietary flat schema based on `model.Report` (`issues: [...]`, `summary: {...}`);
-2. Industry-standard SARIF (Static Analysis Results Interchange Format) for native integration with GitHub Code Scanning and GitLab SAST;
-3. Two-tier support (`--format json` and `--format sarif`).
-
-Why it matters:
-Defines the integration contract for `fiss-lint` in CI/CD pipelines and external tooling consumption.
-
-Origin:
-System architecture document `FISS/knowledge/project/architecture.md` (planned flags section).
-
-Revisit if:
-Specification and implementation of structured output reporters (Story #9).
-
----
-
 ### [OQ-003] Diagnostic Error Message Localization
 
 Status:
@@ -47,6 +25,16 @@ Specification and implementation of CLI text reporter and error message catalog.
 
 ## Closure Notes
 
+### [OQ-002] Machine-Readable Output Schema (--format json)
+
+Исход:
+Resolved
+
+Закрыто через:
+Реализация плоской схемы на базе `model.Report` в Story #8 (`internal/cli/reporter.go`, коммиты `cc81ea3`, `4b09fb2`). Вывод включает массив `issues` (`rule_id`, `severity`, `file`, `line`, `message`) и объект `summary` (`errors`, `warnings`, `total`). Пустой отчет сериализуется с пустым срезом `[]`.
+
+---
+
 ### [OQ-001] Symlink Handling Strategy for External and Circular Links
 
 Исход:
@@ -54,3 +42,4 @@ Resolved
 
 Закрыто через:
 Реализация алгоритма BFS обхода графа навигации в Story #6 (`internal/linter/topology.go`, коммиты `f655bd2`, `fd33b46`), использующая каноническое разрешение путей через `filepath.EvalSymlinks` (`visitedRealPaths`) и нормализацию относительных индексов (`visitedIndexes`). Внешние ссылки за пределы корня репозитория не включаются в граф FISS.
+

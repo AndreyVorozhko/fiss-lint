@@ -80,9 +80,14 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
 - **Supported Flags:**
   - `-h`, `--help`: Usage help and rule summary.
   - `-v`, `--version`: Version, commit, and build date.
-- **Planned Flags:**
-  - `--format [text|json]`: Output format (default `text`).
+  - `--format [text|json]`: Output format: `text` (default) or `json`.
   - `--strict`: Escalates warnings to errors (exit code `1`).
+- **Reporters Architecture:**
+  - `Reporter` interface (`internal/cli/reporter.go`) with `Report(report *model.Report, w io.Writer) error`.
+  - `TextReporter`: Line-by-line human-readable terminal output (`[SEVERITY] [RULE_ID] path:line: message`).
+  - `JSONReporter`: Indented structured JSON (`issues` array with `rule_id`, `severity`, `file`, `line`, `message`, and `summary` with `errors`, `warnings`, `total`).
 - **Exit Codes:**
-  - `0`: No errors found (or only warnings when `--strict` is not set).
-  - `1`: One or more `Error` issues detected (or warnings with `--strict`).
+  - `0`: Validation passed (no errors, or only warnings when `--strict` is not set).
+  - `1`: One or more `Error` issues detected (or warnings when `--strict` is set), or runtime filesystem error.
+  - `2`: Invalid CLI flags or option values (e.g., unsupported format).
+
