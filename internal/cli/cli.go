@@ -16,8 +16,10 @@ Usage:
   fiss-lint [flags] [path]
 
 Flags:
-  -h, --help      Show help and rules summary
-  -v, --version   Show version information
+  -h, --help            Show help and rules summary
+  -v, --version         Show version information
+      --format string   Output format: text (default) or json
+      --strict          Fail with exit code 1 if warnings are detected
 
 FISS Rules Summary:
   FISS-R001  [Error]    Root Structure: The project root MUST contain the FISS/ directory.
@@ -48,11 +50,15 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 
 	var showHelp bool
 	var showVersion bool
+	var format string
+	var strict bool
 
 	fs.BoolVar(&showHelp, "h", false, "Show help and rules summary")
 	fs.BoolVar(&showHelp, "help", false, "Show help and rules summary")
 	fs.BoolVar(&showVersion, "v", false, "Show version information")
 	fs.BoolVar(&showVersion, "version", false, "Show version information")
+	fs.StringVar(&format, "format", "text", "Output format: text (default) or json")
+	fs.BoolVar(&strict, "strict", false, "Fail with exit code 1 if warnings are detected")
 
 	fs.Usage = func() {
 		// Suppress default FlagSet output so we can format help to stdout.
@@ -78,6 +84,11 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 		return 0
 	}
 
+	if format != "text" && format != "json" {
+		fmt.Fprintf(stderr, "Error: invalid format %q, must be \"text\" or \"json\"\n", format)
+		return 2
+	}
+
 	targetPath := "."
 	if fs.NArg() > 0 {
 		targetPath = fs.Arg(0)
@@ -90,11 +101,23 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 		return 1
 	}
 
-	for _, issue := range report.Issues {
-		fmt.Fprintln(stdout, issue.Format())
+	var rep Reporter
+	switch format {
+	case "json":
+		rep = NewJSONReporter()
+	default:
+		rep = NewTextReporter()
+	}
+
+	if err := rep.Report(report, stdout); err != nil {
+		fmt.Fprintf(stderr, "Error: formatting report: %v\n", err)
+		return 1
 	}
 
 	if report.HasErrors() {
+		return 1
+	}
+	if strict && report.WarningsCount() > 0 {
 		return 1
 	}
 

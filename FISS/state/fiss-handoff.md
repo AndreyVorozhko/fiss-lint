@@ -1,44 +1,44 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/7 (User Story #7: Проверка корневых инструкций агентам AGENTS.md)
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/8 (User Story #8: Машиночитаемый формат (--format json) и режим --strict для CI/CD)
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #6 (Space topology, composite areas, overrides and reachability) successfully completed, accepted, and merged into `main` (`c9fa65d`).
-- **Target Story:** User Story #7 (Taiga Ref: 7, ID: 54) — "Проверка корневых инструкций агентам AGENTS.md".
-- **Branch:** `feature/story-7/agent-entry`.
-- **Pre-Planning Verification:** Story #7 scope, DoD, and covered rule (`FISS-R010`) audited against FISS v1.0.0 normative specification (`https://fiss.vorozhko.ru/v1.0.0/llms.txt`, line 269) and Conformance Checklist.
-- **Verification:** All unit and integration tests passing (`go test -count=1 ./...`, 100% PASS), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures and self repository root (0 errors, exit code 0). Accepted by human reviewer with added support for `QWEN.md`.
+- **Previous Story:** Story #7 (Verification of root agent instructions AGENTS.md, CLAUDE.md, .cursorrules, QWEN.md for FISS-R010) successfully completed, accepted, and merged into `main` (`8e52e0e`).
+- **Target Story:** User Story #8 (Taiga Ref: 8, ID: 55) — "Машиночитаемый формат (--format json) и режим --strict для CI/CD".
+- **Branch:** `feature/story-8/json-and-strict`.
+- **Pre-Planning Verification:** Story #8 scope, DoD (flags `--format [text|json]`, `--strict`, target path, CI/CD integration docs) and resolution of `[OQ-002]` audited against FISS v1.0.0 normative specification and Conformance Checklist.
+- **Verification:** All unit and integration tests passing (`go test -count=1 ./...`, 100% PASS), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures (`testdata/warning_only`, `testdata/valid_minimal`, `testdata/invalid_*`) and self repository root (0 errors, exit code 0). Accepted by human reviewer without objections.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
 ### Outcome Classification
 1. **Subject Knowledge (`subject-knowledge-refresh`):**
-   - Rule `FISS-R010` was already established in `FISS/knowledge/subject/rules.md`. Verified normative consistency with FISS v1.0.0. No drift detected.
-   - Classification: **No persistence** (already canonical).
+   - Standard FISS v1.0.0 rules and invariants unchanged. Verified normative consistency. No drift detected.
+   - Classification: **No persistence**.
 2. **Project Knowledge (`project-knowledge-refresh`):**
-   - Updated `FISS/knowledge/project/architecture.md` with:
-     - Documented `internal/linter/agents.go` in project structure.
-     - Documented pipeline stage 6 `checkAgentInstructions` (discovery of `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, `QWEN.md`, exact case matching, directive validation).
-     - Added `FISS-R010` to implemented rules list.
+   - Updated `FISS/knowledge/project/architecture.md`:
+     - Documented supported flags `--format [text|json]` and `--strict`.
+     - Documented `Reporter` interface abstraction (`internal/cli/reporter.go`), `JSONReporter` and `TextReporter`.
+     - Documented updated CLI exit codes (`0`, `1`, `2`).
    - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Routine implementation of separate scanner module `agents.go` with exact entry matching via `os.ReadDir` and clean integration into sequential pipeline stage 6, adhering to Clean Architecture principles.
-   - Classification: **No persistence** (routine architectural choice following established patterns; documented in architecture and risks).
+   - Selected and implemented flat JSON report schema (`issues` + `summary`) based on `model.Report` with empty slice serialization (`"issues": []`). Decoupled formatting from CLI execution via `Reporter` interface.
+   - Classification: **No persistence** (documented in architecture and closed `[OQ-002]`).
 4. **Risks (`risk-register`):**
-   - Updated `FISS/state/risks.md`: `[RISK-002]` supplemented with evidence for `findAgentInstructionFiles` exact case matching on NTFS/APFS filesystems.
-   - Classification: **Capture here** (`FISS/state/risks.md`).
+   - Audited risk register `FISS/state/risks.md`. No new project risks identified. Flags processing and format validation are isolated in `internal/cli`.
+   - Classification: **No persistence**.
 5. **Open Questions (`open-questions-maintain`):**
-   - Reviewed `FISS/state/open-questions.md`. `[OQ-002]` and `[OQ-003]` remain active for upcoming stories (specifically Story #8 for `--format json`).
-   - Classification: **No persistence** (no new open questions).
+   - Closed `[OQ-002]` (Machine-Readable Output Schema) in `FISS/state/open-questions.md` as resolved. `[OQ-003]` (Diagnostic Error Message Localization) remains active.
+   - Classification: **Capture here** (`FISS/state/open-questions.md`).
 6. **Subject Terminology (`glossary-maintain`):**
-   - Terms "Agent Entry Point" and "Agent Instructions" adhere to FISS v1.0.0 standard terminology.
+   - Output and severity concepts follow FISS standard.
    - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Internal helper methods (`findAgentInstructionFiles`, `directsToFissIndex`, `checkAgentInstructions`) have no cross-project terminology impact.
+   - Standard CLI flag names (`--format`, `--strict`) and reporter types follow conventions.
    - Classification: **No persistence**.
 
 - **Handoff Decision:**
-  - Project memory, architecture, risks, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task (User Story #8: Машиночитаемый формат (--format json) и режим --strict для CI/CD).
+  - Project memory, architecture, open questions, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for the next backlog task.
