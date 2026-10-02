@@ -165,6 +165,48 @@ func TestRun(t *testing.T) {
 			},
 		},
 		{
+			name:         "fixture valid_links",
+			args:         []string{"../../testdata/valid_links"},
+			info:         testBuildInfo,
+			expectedCode: 0,
+		},
+		{
+			name:         "fixture invalid_link_not_found",
+			args:         []string{"../../testdata/invalid_link_not_found"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R006] FISS/INDEX.md:5: target file does not exist: missing-doc.md",
+			},
+		},
+		{
+			name:         "fixture invalid_bare_directory",
+			args:         []string{"../../testdata/invalid_bare_directory"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R006] FISS/INDEX.md:5: link targets a bare directory without INDEX.md: bare_dir/",
+			},
+		},
+		{
+			name:         "fixture invalid_non_markdown",
+			args:         []string{"../../testdata/invalid_non_markdown"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R006] FISS/INDEX.md:5: link target must be a Markdown file (.md): document.txt",
+			},
+		},
+		{
+			name:         "fixture invalid_link_case",
+			args:         []string{"../../testdata/invalid_link_case"},
+			info:         testBuildInfo,
+			expectedCode: 1,
+			stdoutContains: []string{
+				"[ERROR] [FISS-R006] FISS/INDEX.md:5: target file does not exist: guide.md",
+			},
+		},
+		{
 			name:         "self project repository root",
 			args:         []string{"../.."},
 			info:         testBuildInfo,
