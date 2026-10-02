@@ -1,16 +1,16 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/8 (User Story #8: Машиночитаемый формат (--format json) и режим --strict для CI/CD)
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/43 (User Story #43: Интеграция fiss-lint в навыки fiss-maintain и fiss-validate)
 canonical tracker: https://taiga.vorozhko.ru/
-task status: completed
-fiss synchronization: synchronized
+task status: in_progress
+fiss synchronization: pending
 
 ## Context & Baseline
-- **Previous Story:** Story #7 (Verification of root agent instructions AGENTS.md, CLAUDE.md, .cursorrules, QWEN.md for FISS-R010) successfully completed, accepted, and merged into `main` (`8e52e0e`).
-- **Target Story:** User Story #8 (Taiga Ref: 8, ID: 55) — "Машиночитаемый формат (--format json) и режим --strict для CI/CD".
-- **Branch:** `feature/story-8/json-and-strict`.
-- **Pre-Planning Verification:** Story #8 scope, DoD (flags `--format [text|json]`, `--strict`, target path, CI/CD integration docs) and resolution of `[OQ-002]` audited against FISS v1.0.0 normative specification and Conformance Checklist.
-- **Verification:** All unit and integration tests passing (`go test -count=1 ./...`, 100% PASS), `make clean && make build-all && make test` (100% PASS across 6 OS/arch targets). CLI binary verified on dedicated test fixtures (`testdata/warning_only`, `testdata/valid_minimal`, `testdata/invalid_*`) and self repository root (0 errors, exit code 0). Accepted by human reviewer without objections.
+- **Previous Story:** Story #8 (Machine-readable format `--format json` and `--strict` mode) successfully completed, accepted, and merged into `main` (`69a66c2`).
+- **Target Story:** User Story #43 (Taiga Ref: 43, ID: 56) — "Интеграция fiss-lint в навыки fiss-maintain и fiss-validate".
+- **Branch:** `feature/story-43/skill-integration`.
+- **Pre-Planning Verification:** Story #43 scope and DoD (detection/installation of `fiss-lint`, removal of redundant mechanical checks, delegation of deterministic verification to `fiss-lint`) audited against FISS v1.0.0 normative specification, Conformance Checklist, and skills architecture.
+- **Verification:** In progress.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
