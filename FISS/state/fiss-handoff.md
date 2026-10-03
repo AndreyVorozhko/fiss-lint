@@ -2,8 +2,8 @@
 
 task: https://taiga.vorozhko.ru/project/vorozhkoru/us/52 (User Story #52: Корневой README.md на английском со ссылкой на русскую версию)
 canonical tracker: https://taiga.vorozhko.ru/
-task status: in_progress
-fiss synchronization: pending
+task status: completed
+fiss synchronization: synchronized
 
 ## Context & Baseline
 - **Target Story:** User Story #52 (Taiga Ref: 52, ID: 60) — "Корневой README.md на английском со ссылкой на русскую версию".
@@ -12,7 +12,7 @@ fiss synchronization: pending
   1. English root `README.md` authored with language switcher, project scope, installation (curl, PowerShell, go install, GitHub Releases, source build), CLI guide, full table of rules FISS-R001–FISS-R018, pre-push/pre-commit hooks, GitHub Actions/GitLab CI pipelines, tooling division table, and Built with FISS footer.
   2. Russian `README_RU.md` authored with symmetrical structure and content.
   3. Verification: `bin/fiss-lint --strict .`, `make test`, `make test-install`, `make build-all` all passed with 0 errors.
-- **Transition Gate Status:** In accordance with `FISS/overrides/handoff.md` and `fiss-maintain` Phase 2 (Prepare), the transition gate remains in state `fiss synchronization: pending` until human inspection of the Human Review Surface and explicit confirmation.
+- **Transition Gate Status:** User confirmed task acceptance after Human Review Surface inspection. Transition gate opened (fiss synchronization: synchronized).
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
@@ -41,4 +41,4 @@ fiss synchronization: pending
 
 - **Handoff Decision:**
    - All constituent tasks completed, verified, and staged.
-   - Handoff gate is held in `pending` awaiting human review of the Human Review Surface and user confirmation.
+   - Handoff gate opened (synchronized) following explicit human acceptance.
