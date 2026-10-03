@@ -14,7 +14,7 @@ The toolchain (`Makefile`) must cross-compile binaries for:
 
 ## Build Configuration & Variables
 Runtime configuration files (`.env`) are not required. Build metadata is injected via linker flags (`-ldflags`):
-- `VERSION`: Semantic release version.
+- `VERSION`: Semantic release version (SemVer 2.0.0 format `vMAJOR.MINOR.PATCH`, e.g. `v1.0.0`) resolved via `git describe --tags --dirty 2>/dev/null || echo "v1.0.0-dev"`. See `versioning.md`.
 - `COMMIT`: Git commit SHA.
 - `BUILD_DATE`: Build timestamp in UTC.
 
@@ -85,7 +85,7 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
 - **Reporters Architecture:**
   - `Reporter` interface (`internal/cli/reporter.go`) with `Report(report *model.Report, w io.Writer) error`.
   - `TextReporter`: Line-by-line human-readable terminal output (`[SEVERITY] [RULE_ID] path:line: message`).
-  - `JSONReporter`: Indented structured JSON (`issues` array with `rule_id`, `severity`, `file`, `line`, `message`, and `summary` with `errors`, `warnings`, `total`).
+  - `JSONReporter`: Indented structured JSON (`issues` array with `rule_id`, `severity`, `file`, `line`, `message`, and `summary` with `version`, `errors`, `warnings`, `total`).
 - **Exit Codes:**
   - `0`: Validation passed (no errors, or only warnings when `--strict` is not set).
   - `1`: One or more `Error` issues detected (or warnings when `--strict` is set), or runtime filesystem error.

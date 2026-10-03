@@ -1,44 +1,48 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/49 (User Story #49: Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011))
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/50 (User Story #50: Семантическое версионирование v1.0.0 и регламентация в FISS)
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #43 (Интеграция fiss-lint в навыки fiss-maintain и fiss-validate) successfully completed, accepted, and merged into `main` (`74c532d`).
-- **Target Story:** User Story #49 (Taiga Ref: 49, ID: 57) — "Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011)".
-- **Branch:** `feature/story-49/github-mirror`.
-- **Pre-Planning Verification:** Story #49 scope and DoD (валидация ссылки на GitHub-зеркало стандарта FISS `https://github.com/AndreyVorozhko/fiss`, включая ветки версий `blob/v1.0.0/llms.txt`, обновление диагностического сообщения FISS-R011, документация и тесты) согласованы с нормативами FISS v1.0.0.
-- **Verification:** Completed. All constituent tasks (T-54, T-55, T-56, T-57) and off-track task (T-58) closed, unit and integration tests passing (`make test`), matrix cross-compilation passing (`make build-all`), and self-linting clean (`bin/fiss-lint --strict .`).
+- **Previous Story:** Story #49 (Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011)) successfully completed, accepted, and merged into `main` (`d511679`).
+- **Target Story:** User Story #50 (Taiga Ref: 50, ID: 58) — "Семантическое версионирование v1.0.0 и регламентация в FISS".
+- **Branch:** `feature/story-50/semver`.
+- **Pre-Planning Verification:** Story #50 scope and DoD (поддержка SemVer в Makefile с fallback `v1.0.0-dev`, добавление `version` в `JSONSummary`, CLI-вывод версии, регламентация правил версионирования в `FISS/knowledge/project/versioning.md`, регистрация в `FISS/INDEX.md`, базовый релизный тег `v1.0.0`, тесты и сквозная верификация) согласованы с нормативами FISS v1.0.0.
+- **Verification:** Completed. All constituent tasks (T-59, T-60, T-61, T-62) executed and verified. Unit and integration tests passing (`make test`), matrix cross-compilation passing (`make build-all`), and self-linting clean (`bin/fiss-lint --strict .`).
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
 ### Outcome Classification
 1. **Subject Knowledge (`subject-knowledge-refresh`):**
-   - Rule `FISS-R011` definition updated in `FISS/knowledge/subject/rules.md`: official standard specification link may target either official website (`https://fiss.vorozhko.ru`) or official GitHub mirror (`https://github.com/AndreyVorozhko/fiss`, including version branch file links like `https://github.com/AndreyVorozhko/fiss/blob/v1.0.0/llms.txt`), or both simultaneously.
-   - Classification: **Capture here** (`FISS/knowledge/subject/rules.md`).
+   - Standard specification remains at FISS v1.0.0.
+   - Classification: **No persistence**.
 2. **Project Knowledge (`project-knowledge-refresh`):**
-   - Updated `FISS/knowledge/project/architecture.md`:
-     - Documented `isStandardTarget` and `checkIndexLinks` behavior recognizing GitHub mirror targets.
-     - Documented dual-link fallback pattern in root `FISS/INDEX.md` for offline/fallback resilience.
-   - Integrated standard ecosystem note `Built with ღ and [FISS](https://fiss.vorozhko.ru)` into `README.md` and CLI version banner (`fiss-lint --version`) per FISS v1.0.0 examples.
-   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `FISS/INDEX.md`, `README.md`).
+   - Created `FISS/knowledge/project/versioning.md`: codified SemVer 2.0.0 policy (`vMAJOR.MINOR.PATCH`), increment criteria (MAJOR/MINOR/PATCH), toolchain integration, and release lifecycle.
+   - Registered `versioning.md` in `FISS/INDEX.md` with two-line navigation entry (`Read when:`).
+   - Updated `FISS/knowledge/project/architecture.md`: documented SemVer version resolution in `Makefile` and `summary.version` in `JSONReporter`.
+   - Updated `FISS/knowledge/project/workflow.md`: added section on release and versioning lifecycle.
+   - Updated `README.md`: updated JSON report examples with `summary.version`.
+   - Classification: **Capture here** (`FISS/knowledge/project/versioning.md`, `FISS/INDEX.md`, `FISS/knowledge/project/architecture.md`, `FISS/knowledge/project/workflow.md`, `README.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Codified decision on recognizing GitHub mirror repository root and version branch file links (`blob/v1.0.0/llms.txt`) as valid targets for rule `FISS-R011` without network requests, maintaining deterministic, zero-dependency offline validation.
-   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
+   - Established SemVer 2.0.0 versioning policy for `fiss-lint`:
+     - Dynamic tag extraction via `git describe --tags --dirty 2>/dev/null` with deterministic fallback to `v1.0.0-dev` when Git metadata is absent.
+     - Release tag `v1.0.0` placed as an annotated tag on commit `d511679` (first complete stable release).
+     - Backward-compatible JSON schema extension (`Version string `json:"version,omitempty"`` in `JSONSummary`).
+   - Classification: **Capture here** (`FISS/knowledge/project/versioning.md`, `FISS/knowledge/project/architecture.md`).
 4. **Risks (`risk-register`):**
-   - Offline resilience risk addressed by supporting local/mirror references; no new risks introduced.
+   - Build environment version drift mitigated by fallback `v1.0.0-dev` in `Makefile`. No new unmitigated risks.
    - Classification: **No persistence**.
 5. **Open Questions (`open-questions-maintain`):**
-   - No new unresolved questions generated. Existing `[OQ-003]` remains active.
+   - No new open questions. Existing `[OQ-003]` remains active.
    - Classification: **No persistence**.
 6. **Subject Terminology (`glossary-maintain`):**
-   - FISS standard concepts unchanged.
+   - Subject domain concepts unchanged.
    - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Terminology for GitHub mirror and standard references aligned across CLI diagnostics and documentation.
+   - Aligned SemVer terminology (MAJOR, MINOR, PATCH, pre-release, build metadata) across CLI and documentation.
    - Classification: **No persistence**.
 
 - **Handoff Decision:**
-  - Project memory, architecture, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for acceptance and merge.
+   - Intellectual space, project memory, and operational state are fully synchronized with the codebase and requirements. All transition gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for human acceptance and merge.

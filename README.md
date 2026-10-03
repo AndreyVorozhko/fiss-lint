@@ -99,6 +99,7 @@ fiss-lint [flags] [path]
     }
   ],
   "summary": {
+    "version": "v1.0.0",
     "errors": 0,
     "warnings": 1,
     "total": 1
@@ -112,6 +113,7 @@ fiss-lint [flags] [path]
 {
   "issues": [],
   "summary": {
+    "version": "v1.0.0",
     "errors": 0,
     "warnings": 0,
     "total": 0

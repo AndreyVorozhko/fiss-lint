@@ -109,6 +109,49 @@ func TestJSONReporter_WriterError(t *testing.T) {
 	}
 }
 
+func TestJSONReporter_WithVersion(t *testing.T) {
+	rep := model.NewReport()
+	reporter := NewJSONReporter("v1.0.0")
+
+	var buf bytes.Buffer
+	err := reporter.Report(rep, &buf)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var parsed JSONReport
+	if err := json.Unmarshal(buf.Bytes(), &parsed); err != nil {
+		t.Fatalf("failed to parse JSON: %v, raw output:\n%s", err, buf.String())
+	}
+
+	if parsed.Summary.Version != "v1.0.0" {
+		t.Errorf("expected summary.version to be %q, got %q", "v1.0.0", parsed.Summary.Version)
+	}
+}
+
+func TestJSONReporter_WithoutVersion(t *testing.T) {
+	rep := model.NewReport()
+	reporter := NewJSONReporter()
+
+	var buf bytes.Buffer
+	err := reporter.Report(rep, &buf)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	var rawMap map[string]interface{}
+	if err := json.Unmarshal(buf.Bytes(), &rawMap); err != nil {
+		t.Fatalf("failed to parse JSON: %v", err)
+	}
+	summary, ok := rawMap["summary"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected summary object in JSON")
+	}
+	if ver, exists := summary["version"]; exists && ver != "" {
+		t.Errorf("expected version to be omitted or empty when not provided, got %v", ver)
+	}
+}
+
 func TestTextReporter_EmptyReport(t *testing.T) {
 	rep := model.NewReport()
 	reporter := NewTextReporter()

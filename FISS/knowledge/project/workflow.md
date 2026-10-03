@@ -178,3 +178,11 @@ flowchart LR
 7. **Language Invariant for Taiga:**
    - All User Stories, Tasks, titles, descriptions, tags, and discussion/evidence comments in Taiga MUST be maintained in Russian.
 
+## Release & Versioning Lifecycle
+- Every release follows Semantic Versioning 2.0.0 (`vMAJOR.MINOR.PATCH`) as detailed in [Semantic Versioning & Release Policy](versioning.md).
+- Release tags are created as annotated Git tags on canonical commits in `main`:
+  ```bash
+  git tag -a v1.0.0 <commit-sha> -m "Release v1.0.0: Initial stable release of fiss-lint"
+  ```
+- The build toolchain (`Makefile`) embeds the resolved SemVer tag into all binary artifacts and JSON summaries.
+
