@@ -325,6 +325,24 @@ func TestRun(t *testing.T) {
 			stdoutContains: []string{
 				`"issues": []`,
 				`"summary": {`,
+				`"version": "1.2.3"`,
+				`"errors": 0`,
+				`"warnings": 0`,
+				`"total": 0`,
+			},
+		},
+		{
+			name: "format json with semver v1.0.0",
+			args: []string{"--format", "json", "../../testdata/valid_minimal"},
+			info: model.BuildInfo{
+				Version:   "v1.0.0",
+				Commit:    "d511679",
+				BuildDate: "2026-10-03T10:00:00Z",
+			},
+			expectedCode: 0,
+			stdoutContains: []string{
+				`"summary": {`,
+				`"version": "v1.0.0"`,
 				`"errors": 0`,
 				`"warnings": 0`,
 				`"total": 0`,
@@ -339,6 +357,7 @@ func TestRun(t *testing.T) {
 				`"rule_id": "FISS-R010"`,
 				`"severity": "ERROR"`,
 				`"file": "AGENTS.md"`,
+				`"version": "1.2.3"`,
 				`"errors": 1`,
 			},
 		},
