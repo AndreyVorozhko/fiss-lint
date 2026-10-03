@@ -20,5 +20,7 @@ Entry point to the intellectual space of the `fiss-lint` project.
   Read when: configuring versioning rules, semantic version tags, or preparing releases.
 - [Human Knowledge](human/knowledge/INDEX.md)
   Read when: configuring developer or agent environments, setting up skills, or reading human-oriented guides.
+- [Human Mental Models](human/hmm/INDEX.md)
+  Read when: understanding high-level concepts, architectural trade-offs, rule severity models, or ecosystem roles.
 - [Task Synchronization State](state/INDEX.md)
   Read when: checking the task transition gate, handoff status, or synchronization completeness.
