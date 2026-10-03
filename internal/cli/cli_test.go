@@ -119,7 +119,7 @@ func TestRun(t *testing.T) {
 			expectedCode: 1,
 			stdoutContains: []string{
 				"[ERROR] [FISS-R003] FISS/INDEX.md: missing link to BOOTSTRAP.md",
-				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 			},
 		},
 		{
@@ -352,7 +352,7 @@ func TestRun(t *testing.T) {
 			info:         testBuildInfo,
 			expectedCode: 0,
 			stdoutContains: []string{
-				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 			},
 		},
 		{
@@ -361,7 +361,7 @@ func TestRun(t *testing.T) {
 			info:         testBuildInfo,
 			expectedCode: 1,
 			stdoutContains: []string{
-				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+				"[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 			},
 		},
 		{

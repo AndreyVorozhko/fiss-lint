@@ -82,9 +82,9 @@ func TestIssueFormat(t *testing.T) {
 				Severity: SeverityWarning,
 				FilePath: "FISS/INDEX.md",
 				Line:     0,
-				Message:  "recommended link to official standard https://fiss.vorozhko.ru not found",
+				Message:  "recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 			},
-			want: "[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found",
+			want: "[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 		},
 	}
 
