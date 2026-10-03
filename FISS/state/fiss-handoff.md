@@ -6,29 +6,39 @@ task status: in_progress
 fiss synchronization: pending
 
 ## Context & Baseline
-- **Previous Story:** Story #51 (Скрипты автономной быстрой установки через curl (Linux, macOS, Windows)) successfully completed, accepted by human reviewer, and merged into `main` (`d1c1307`).
 - **Target Story:** User Story #52 (Taiga Ref: 52, ID: 60) — "Корневой README.md на английском со ссылкой на русскую версию".
 - **Branch:** `feature/story-52/readme-english`.
-- **Pre-Planning Verification:** Scope and DoD of Story #52 (English root `README.md`, Russian `README_RU.md`, language switchers, complete rules table `FISS-R001`–`FISS-R018`, installation methods, CLI guide, pre-push/pre-commit hooks, CI/CD pipelines, and AI tooling division) aligned with FISS v1.0.0 and project workflow.
-- **Transition Gate Status:** Gate closed (`pending`) before authoring documentation changes in accordance with `FISS/overrides/handoff.md` (Phase 1: Lock).
+- **Pre-Planning Verification:** All DoD requirements satisfied:
+  1. English root `README.md` authored with language switcher, project scope, installation (curl, PowerShell, go install, GitHub Releases, source build), CLI guide, full table of rules FISS-R001–FISS-R018, pre-push/pre-commit hooks, GitHub Actions/GitLab CI pipelines, tooling division table, and Built with FISS footer.
+  2. Russian `README_RU.md` authored with symmetrical structure and content.
+  3. Verification: `bin/fiss-lint --strict .`, `make test`, `make test-install`, `make build-all` all passed with 0 errors.
+- **Transition Gate Status:** In accordance with `FISS/overrides/handoff.md` and `fiss-maintain` Phase 2 (Prepare), the transition gate remains in state `fiss synchronization: pending` until human inspection of the Human Review Surface and explicit confirmation.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
 ### Outcome Classification
 1. **Subject Knowledge (`subject-knowledge-refresh`):**
-   - Pending evaluation during task execution.
+   - Normative requirements of FISS v1.0.0 remain unchanged.
+   - Classification: **No persistence**.
 2. **Project Knowledge (`project-knowledge-refresh`):**
-   - Pending evaluation during task execution.
+   - Created root `README.md` (English) and `README_RU.md` (Russian) with symmetrical sections: language switcher, overview, features, 5 installation methods, CLI usage and exit codes, full 18-rule catalog (FISS-R001–FISS-R018), Git hooks (`pre-push`, `pre-commit`), CI/CD (`.github/workflows/fiss-lint.yml`, `.gitlab-ci.yml`), and AI tooling division.
+   - Classification: **Capture here** (`README.md`, `README_RU.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Pending evaluation during task execution.
+   - Established dual-language documentation structure (`README.md` in English as primary root, `README_RU.md` in Russian).
+   - Classification: **No persistence**.
 4. **Risks (`risk-register`):**
-   - Pending evaluation during task execution.
+   - Mitigated risk of documentation drift by symmetrical section organization.
+   - Classification: **No persistence**.
 5. **Open Questions (`open-questions-maintain`):**
-   - Pending evaluation during task execution.
+   - No new open questions. Existing `[OQ-003]` remains active.
+   - Classification: **No persistence**.
 6. **Subject Terminology (`glossary-maintain`):**
-   - Pending evaluation during task execution.
+   - Domain concepts unchanged.
+   - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Pending evaluation during task execution.
+   - Aligned English/Russian terminology for CLI flags, exit codes, and rules.
+   - Classification: **No persistence**.
 
 - **Handoff Decision:**
-   - Active task in progress under `feature/story-52/readme-english`. Handoff gate remains closed (`pending`) across implementation and verification until human review and confirmation.
+   - All constituent tasks completed, verified, and staged.
+   - Handoff gate is held in `pending` awaiting human review of the Human Review Surface and user confirmation.
