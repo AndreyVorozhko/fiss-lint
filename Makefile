@@ -8,7 +8,7 @@ BIN_DIR := bin
 BINARY_NAME := fiss-lint
 LDFLAGS := -s -w -X 'main.version=$(VERSION)' -X 'main.commit=$(COMMIT)' -X 'main.buildDate=$(BUILD_DATE)'
 
-.PHONY: all build build-all test clean init-hooks
+.PHONY: all build build-all test test-install clean init-hooks
 
 all: build
 
@@ -27,6 +27,9 @@ build-all:
 
 test:
 	CGO_ENABLED=0 go test -v ./...
+
+test-install:
+	bash scripts/install_test.sh
 
 clean:
 	rm -rf $(BIN_DIR)
