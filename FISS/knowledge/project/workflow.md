@@ -196,4 +196,7 @@ flowchart LR
   git tag -a v1.0.0 <commit-sha> -m "Release v1.0.0: Initial stable release of fiss-lint"
   ```
 - The build toolchain (`Makefile`) embeds the resolved SemVer tag into all binary artifacts and JSON summaries.
+- Autonomous installation scripts (`scripts/install.sh`, `scripts/install.ps1`) allow single-command installation directly from releases for Linux, macOS, and Windows.
+- The installation test suite is verified alongside core unit tests via `make test-install` (`scripts/install_test.sh`).
+
 
