@@ -24,8 +24,9 @@ fiss synchronization: synchronized
    - Implemented `scripts/install_test.sh` and added `test-install` target in `Makefile` to verify installation workflows.
    - Updated `README.md`: added Quick Installation section for Linux, macOS, and Windows.
    - Updated `FISS/knowledge/project/architecture.md`: documented release distribution model, CDN direct redirects, and installer mechanics.
-   - Updated `FISS/knowledge/project/workflow.md`: documented install test workflow.
-   - Classification: **Capture here** (`README.md`, `FISS/knowledge/project/architecture.md`, `FISS/knowledge/project/workflow.md`).
+   - Updated `FISS/knowledge/project/workflow.md`: documented install test workflow and codified retention of `pending` transition gate during `Ready for test` until human confirmation.
+   - Created `FISS/overrides/handoff.md` and registered in `FISS/overrides/INDEX.md`: codified Handoff Gate Human Confirmation Protocol.
+   - Classification: **Capture here** (`README.md`, `FISS/knowledge/project/architecture.md`, `FISS/knowledge/project/workflow.md`, `FISS/overrides/handoff.md`, `FISS/overrides/INDEX.md`).
 3. **Architectural Decisions (`adr-maintain`):**
    - Established direct CDN asset downloads via GitHub Releases redirects (`releases/latest/download/...` and `releases/download/{tag}/...`) avoiding GitHub REST API rate limits in CI/CD and terminal environments.
    - Standardized user-space default install paths (`$HOME/.local/bin` on Unix, `%LOCALAPPDATA%\Programs\fiss-lint` on Windows) with automatic PATH checking/registration.
