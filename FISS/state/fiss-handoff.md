@@ -8,11 +8,39 @@ fiss synchronization: pending
 ## Context & Baseline
 - **Target Story:** User Story #53 (Taiga Ref: 53, ID: 61) — "Русскоязычные ментальные модели человека (HMM) для Product Owner".
 - **Branch:** `feature/story-53/hmm-product-owner`.
-- **Pre-Planning Verification:**
-  - Base commit: `eae62cc` on `main`.
-  - Previous task Story #52 completed and merged to `main`.
-  - Clean linter verification: `bin/fiss-lint --strict .` passed with 0 errors, 0 warnings.
-- **Transition Gate Status:** Phase 1 (Lock) executed. Transition gate closed (`fiss synchronization: pending`) prior to substantive development.
+- **Pre-Planning Verification:** All DoD requirements satisfied:
+  1. HMM area `FISS/human/hmm/` created with `INDEX.md` and 4 Russian-language mental model documents (`linter-concepts.md`, `rules-and-severity.md`, `ecosystem.md`, `roadmap-and-feedback.md`).
+  2. Every HMM document marked with valid `Derived from:` headers linking to canonical source materials.
+  3. Navigation updated in `FISS/INDEX.md` and `FISS/human/hmm/INDEX.md` with two-line `Read when:` entries.
+  4. Verification: `bin/fiss-lint --strict .` (0 errors, 0 warnings), `make test` (PASS), `make test-install` (PASS).
+  5. HMM reconciliation audit via `hmm-maintain` performed with verdict `MATCH` across all claims.
+- **Transition Gate Status:** In accordance with `FISS/overrides/handoff.md` and `fiss-maintain` Phase 2 (Prepare), the transition gate remains in state `fiss synchronization: pending` until human inspection of the Human Review Surface and explicit confirmation.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
-- Will be audited and populated during Phase 2 (Prepare).
+
+### Outcome Classification
+1. **Subject Knowledge (`subject-knowledge-refresh`):**
+   - Normative requirements of FISS v1.0.0 remain unchanged.
+   - Classification: **No persistence**.
+2. **Project Knowledge (`project-knowledge-refresh`):**
+   - Created `FISS/human/hmm/` composite area with `INDEX.md` and 4 HMM documents: `linter-concepts.md`, `rules-and-severity.md`, `ecosystem.md`, `roadmap-and-feedback.md`. Updated `FISS/INDEX.md`.
+   - Classification: **Capture here** (`FISS/human/hmm/`, `FISS/INDEX.md`).
+3. **Architectural Decisions (`adr-maintain`):**
+   - Established HMM structure under `FISS/human/hmm/` in strict conformance with `FISS-R013`, `FISS-R015`, `FISS-R016`.
+   - Classification: **No persistence**.
+4. **Risks (`risk-register`):**
+   - Conceptual drift risk mitigated by `hmm-maintain` reconciliation protocol.
+   - Classification: **No persistence**.
+5. **Open Questions (`open-questions-maintain`):**
+   - No new open questions. Existing `[OQ-003]` remains active.
+   - Classification: **No persistence**.
+6. **Subject Terminology (`glossary-maintain`):**
+   - Terminology aligned with FISS v1.0.0.
+   - Classification: **No persistence**.
+7. **Project Terminology (`glossary-maintain`):**
+   - Standardized Russian HMM terms: "Триединство FISS", "Механический страж", "Когнитивный ревизор".
+   - Classification: **No persistence**.
+
+- **Handoff Decision:**
+   - All constituent tasks completed, verified, and staged.
+   - Handoff gate is held in `pending` awaiting human review of the Human Review Surface and user confirmation.
