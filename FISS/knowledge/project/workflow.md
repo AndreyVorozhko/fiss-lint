@@ -160,27 +160,28 @@ flowchart LR
    - **Trigger:** Completion of all constituent tasks and agent verification (Stage 5 *Agent Self-Review*).
    - **Criteria:**
      - All tasks (planned and off-track) are in `Closed` status.
-     - Full test suite and cross-compilation pass (`make clean && make build-all && make test`).
+     - Full test suite and cross-compilation pass (`make clean && make build-all && make test && make test-install`).
      - Agent self-review completed via `project-review` and `code-review-and-quality`.
-     - Context handoff updated (`task status: completed`, `fiss synchronization: synchronized` with 7-point context refresh audit) and **committed to Git**:
-       ```bash
-       git add FISS/state/fiss-handoff.md
-       git commit -m "chore(handoff): open transition gate (fiss synchronization: synchronized)"
-       ```
+     - **Gate Retention:** The transition gate in `FISS/state/fiss-handoff.md` **MUST remain `fiss synchronization: pending`**. The agent is strictly prohibited from opening the gate or committing `fiss synchronization: synchronized` before human confirmation (see `FISS/overrides/handoff.md`).
      - `human-review-surface` generated and presented for human inspection.
    - Agent transitions story status to `Ready for test`.
 
 4. **Rework Loop: `Ready for test` ⇄ `In progress` — *Agent action upon human feedback*:**
    - If human inspection identifies defects, missing evidence, or requests revisions, the agent transitions the story back to `In progress`.
-   - After addressing remarks and obtaining fresh verification evidence, the agent returns the story to `Ready for test`.
+   - The transition gate remains `fiss synchronization: pending`.
+   - After addressing remarks and obtaining fresh verification evidence, the agent returns the story to `Ready for test` with an updated Human Review Surface.
 
-5. **`Ready for test` → `Done` (Accepted & Merged) — *Human action only*:**
-   - **Trigger:** Human completes independent verification and merges the feature branch into `main`.
-   - **Criteria:**
-     - Explicit human satisfaction with implementation and evidence.
+5. **`Ready for test` → `Done` (Accepted & Merged) — *Human confirmation & merge*:**
+   - **Trigger:** Human completes independent verification using the `Human Review Surface` and gives explicit confirmation (e.g. «Задачу принимаю»).
+   - **Criteria & Gate Opening:**
+     - Explicit human confirmation and satisfaction with implementation.
+     - Stage 7 (*Handoff Gate & Intellectual Space Refresh*) completed via `fiss-maintain`: context refresh audit across all 7 dimensions recorded in `FISS/state/fiss-handoff.md` (`task status: completed`, `fiss synchronization: synchronized`).
+     - Atomic opening commit authored:
+       ```bash
+       git add FISS/state/fiss-handoff.md
+       git commit -m "chore(handoff): open transition gate (fiss synchronization: synchronized)"
+       ```
      - Feature branch merged into `main` by the human.
-     - Context handoff verified: Stage 7 (*Handoff Gate & Intellectual Space Refresh*) completed via `fiss-maintain` and verified with `fiss-validate`.
-     - Handoff status transitioned to `task status: done`, `fiss synchronization: synchronized`.
    - **The human (not the agent)** transitions the User Story to `Done` (`status: 25`, `is_closed: true`).
 
 6. **`Done` → `Archived` — *Human action only*:**
@@ -196,4 +197,7 @@ flowchart LR
   git tag -a v1.0.0 <commit-sha> -m "Release v1.0.0: Initial stable release of fiss-lint"
   ```
 - The build toolchain (`Makefile`) embeds the resolved SemVer tag into all binary artifacts and JSON summaries.
+- Autonomous installation scripts (`scripts/install.sh`, `scripts/install.ps1`) allow single-command installation directly from releases for Linux, macOS, and Windows.
+- The installation test suite is verified alongside core unit tests via `make test-install` (`scripts/install_test.sh`).
+
 

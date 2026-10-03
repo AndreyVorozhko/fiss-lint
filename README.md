@@ -18,6 +18,37 @@
 
 ## Установка и сборка
 
+### Быстрая установка (Linux, macOS, Windows)
+
+Установка одной командой скачивает скомпилированный релизный бинарник под вашу операционную систему и архитектуру (без необходимости устанавливать Go):
+
+**Linux и macOS (через `curl`):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.sh | bash
+```
+
+Установка конкретной версии (например, `v1.0.0`):
+```bash
+curl -fsSL https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.sh | bash -s -- v1.0.0
+```
+
+По умолчанию утилита устанавливается в `~/.local/bin` (или `/usr/local/bin` при наличии прав на запись). Путь установки можно переопределить переменной `INSTALL_DIR`:
+```bash
+INSTALL_DIR=/usr/local/bin curl -fsSL https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.sh | bash
+```
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.ps1 | iex
+```
+
+Установка конкретной версии:
+```powershell
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.ps1))) -Version v1.0.0
+```
+
+Скрипт автоматически скачивает `fiss-lint.exe` в `%LOCALAPPDATA%\Programs\fiss-lint` (или `~/bin`) и добавляет директорию в переменную окружения `User PATH`.
+
 ### Сборка из исходников
 
 Требуется Go 1.21 или новее:

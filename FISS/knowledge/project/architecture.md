@@ -116,3 +116,10 @@ Both skills follow a resilient discovery ladder:
 3. `go install github.com/AndreyVorozhko/fiss-lint/cmd/fiss-lint@latest` (when Go toolchain is available).
 4. Graceful fallback to `INSUFFICIENT_EVIDENCE` with installation guidance if automated provisioning is restricted by environment permissions.
 
+## Release Distribution & Autonomous Installers
+Compiled release binaries are published under GitHub Releases (`https://github.com/AndreyVorozhko/fiss-lint/releases`). Autonomous quick installation is supported via:
+- **Unix (Linux & macOS):** `scripts/install.sh` (`curl -fsSL https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.sh | bash`), supporting version selection (`latest` or specific SemVer tag), automated OS/architecture resolution, safe temp download, `$HOME/.local/bin` installation, and optional SHA256 checksum verification.
+- **Windows:** `scripts/install.ps1` (`irm https://raw.githubusercontent.com/AndreyVorozhko/fiss-lint/main/scripts/install.ps1 | iex`), providing architecture detection, User PATH environment variable registration, and clean PowerShell installation.
+- **Rate-Limit Resilience:** Release assets are served directly through GitHub Releases CDN redirects (`releases/latest/download/...` and `releases/download/{tag}/...`) avoiding GitHub REST API rate limits.
+
+
