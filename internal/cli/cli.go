@@ -104,7 +104,7 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 	var rep Reporter
 	switch format {
 	case "json":
-		rep = NewJSONReporter()
+		rep = NewJSONReporter(info.Version)
 	default:
 		rep = NewTextReporter()
 	}

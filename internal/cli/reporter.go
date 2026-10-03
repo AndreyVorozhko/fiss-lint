@@ -30,17 +30,24 @@ type JSONIssue struct {
 
 // JSONSummary aggregates total counts of issues grouped by severity level.
 type JSONSummary struct {
-	Errors   int `json:"errors"`
-	Warnings int `json:"warnings"`
-	Total    int `json:"total"`
+	Version  string `json:"version,omitempty"`
+	Errors   int    `json:"errors"`
+	Warnings int    `json:"warnings"`
+	Total    int    `json:"total"`
 }
 
 // JSONReporter formats validation diagnostics as a structured JSON payload.
-type JSONReporter struct{}
+type JSONReporter struct {
+	version string
+}
 
-// NewJSONReporter creates a new JSONReporter instance.
-func NewJSONReporter() Reporter {
-	return &JSONReporter{}
+// NewJSONReporter creates a new JSONReporter instance with optional version.
+func NewJSONReporter(version ...string) Reporter {
+	var ver string
+	if len(version) > 0 {
+		ver = version[0]
+	}
+	return &JSONReporter{version: ver}
 }
 
 // Report formats the report as indented JSON and writes it to w.
@@ -59,6 +66,7 @@ func (r *JSONReporter) Report(report *model.Report, w io.Writer) error {
 	jr := JSONReport{
 		Issues: issues,
 		Summary: JSONSummary{
+			Version:  r.version,
 			Errors:   report.ErrorsCount(),
 			Warnings: report.WarningsCount(),
 			Total:    len(report.Issues),
