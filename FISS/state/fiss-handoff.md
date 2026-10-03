@@ -2,8 +2,8 @@
 
 task: https://taiga.vorozhko.ru/project/vorozhkoru/us/53 (User Story #53: Русскоязычные ментальные модели человека (HMM) для Product Owner)
 canonical tracker: https://taiga.vorozhko.ru/
-task status: in_progress
-fiss synchronization: pending
+task status: completed
+fiss synchronization: synchronized
 
 ## Context & Baseline
 - **Target Story:** User Story #53 (Taiga Ref: 53, ID: 61) — "Русскоязычные ментальные модели человека (HMM) для Product Owner".
@@ -14,7 +14,7 @@ fiss synchronization: pending
   3. Navigation updated in `FISS/INDEX.md` and `FISS/human/hmm/INDEX.md` with two-line `Read when:` entries.
   4. Verification: `bin/fiss-lint --strict .` (0 errors, 0 warnings), `make test` (PASS), `make test-install` (PASS).
   5. HMM reconciliation audit via `hmm-maintain` performed with verdict `MATCH` across all claims.
-- **Transition Gate Status:** In accordance with `FISS/overrides/handoff.md` and `fiss-maintain` Phase 2 (Prepare), the transition gate remains in state `fiss synchronization: pending` until human inspection of the Human Review Surface and explicit confirmation.
+- **Transition Gate Status:** User confirmed task acceptance after Human Review Surface inspection. Transition gate opened (fiss synchronization: synchronized).
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
@@ -43,4 +43,4 @@ fiss synchronization: pending
 
 - **Handoff Decision:**
    - All constituent tasks completed, verified, and staged.
-   - Handoff gate is held in `pending` awaiting human review of the Human Review Surface and user confirmation.
+   - Handoff gate opened (synchronized) following explicit human acceptance.
