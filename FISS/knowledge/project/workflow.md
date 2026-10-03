@@ -147,6 +147,12 @@ flowchart LR
    - **Trigger:** Beginning work on the story (Stage 1 *Branching* & Stage 2 *Planning*).
    - Agent transitions story status to `In progress` and sets assignee.
    - Implementation plan and operational artifacts (statement, specification, plan) are posted as story comments in Taiga.
+   - **Handoff Gate Closure (Mandatory):** Agent updates `FISS/state/fiss-handoff.md` to `task status: in_progress`, `fiss synchronization: pending` (referencing the active story) and **immediately authors an atomic Git commit**:
+     ```bash
+     git add FISS/state/fiss-handoff.md
+     git commit -m "chore(handoff): close transition gate (fiss synchronization: pending)"
+     ```
+     *(or with task convention: `chore(handoff): закрытие transition gate перед началом работы . T-<id>`)*. Leaving `fiss synchronization: pending` uncommitted in the working tree across implementation commits is strictly prohibited.
    - Tasks are executed sequentially, authoring atomic commits and closing tasks with evidence comments.
    - Story remains in `In progress` throughout stages 2, 3, and 4.
 
@@ -156,6 +162,11 @@ flowchart LR
      - All tasks (planned and off-track) are in `Closed` status.
      - Full test suite and cross-compilation pass (`make clean && make build-all && make test`).
      - Agent self-review completed via `project-review` and `code-review-and-quality`.
+     - Context handoff updated (`task status: completed`, `fiss synchronization: synchronized` with 7-point context refresh audit) and **committed to Git**:
+       ```bash
+       git add FISS/state/fiss-handoff.md
+       git commit -m "chore(handoff): open transition gate (fiss synchronization: synchronized)"
+       ```
      - `human-review-surface` generated and presented for human inspection.
    - Agent transitions story status to `Ready for test`.
 
