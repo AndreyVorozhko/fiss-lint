@@ -25,9 +25,14 @@ func isBootstrapTarget(target string) bool {
 	return cleaned == "BOOTSTRAP.md" || cleaned == "FISS/BOOTSTRAP.md"
 }
 
-// isStandardTarget returns true if the link target references the official FISS standard.
+// isStandardTarget returns true if the link target references the official FISS standard
+// (official website or official GitHub mirror, including version branch links).
 func isStandardTarget(target string) bool {
-	return strings.Contains(target, "https://fiss.vorozhko.ru") || strings.Contains(target, "http://fiss.vorozhko.ru")
+	t := strings.TrimSpace(target)
+	return strings.Contains(t, "https://fiss.vorozhko.ru") ||
+		strings.Contains(t, "http://fiss.vorozhko.ru") ||
+		strings.Contains(t, "https://github.com/AndreyVorozhko/fiss") ||
+		strings.Contains(t, "http://github.com/AndreyVorozhko/fiss")
 }
 
 // checkIndexLinks verifies rule FISS-R003 (link to BOOTSTRAP.md) and FISS-R011 (link to official standard).
@@ -79,7 +84,7 @@ func checkIndexLinks(projectRoot string, report *model.Report) error {
 			Severity: model.SeverityWarning,
 			FilePath: "FISS/INDEX.md",
 			Line:     0,
-			Message:  "recommended link to official standard https://fiss.vorozhko.ru not found",
+			Message:  "recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found",
 		})
 	}
 

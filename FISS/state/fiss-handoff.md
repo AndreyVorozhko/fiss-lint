@@ -1,16 +1,16 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/43 (User Story #43: Интеграция fiss-lint в навыки fiss-maintain и fiss-validate)
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/49 (User Story #49: Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011))
 canonical tracker: https://taiga.vorozhko.ru/
-task status: completed
-fiss synchronization: synchronized
+task status: in_progress
+fiss synchronization: pending
 
 ## Context & Baseline
-- **Previous Story:** Story #8 (Machine-readable format `--format json` and `--strict` mode) successfully completed, accepted, and merged into `main` (`69a66c2`).
-- **Target Story:** User Story #43 (Taiga Ref: 43, ID: 56) — "Интеграция fiss-lint в навыки fiss-maintain и fiss-validate".
-- **Branch:** `feature/story-43/skill-integration`.
-- **Pre-Planning Verification:** Story #43 scope and DoD (detection/installation of `fiss-lint`, removal of redundant mechanical checks, delegation of deterministic verification to `fiss-lint`) audited against FISS v1.0.0 normative specification, Conformance Checklist, and skills architecture.
-- **Verification:** Completed. All 5 tasks closed, end-to-end verification script `scripts/verify-skills-integration.sh` passed, exit code 0.
+- **Previous Story:** Story #43 (Интеграция fiss-lint в навыки fiss-maintain и fiss-validate) successfully completed, accepted, and merged into `main` (`74c532d`).
+- **Target Story:** User Story #49 (Taiga Ref: 49, ID: 57) — "Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011)".
+- **Branch:** `feature/story-49/github-mirror`.
+- **Pre-Planning Verification:** Story #49 scope and DoD (валидация ссылки на GitHub-зеркало стандарта FISS `https://github.com/AndreyVorozhko/fiss`, включая ветки версий `blob/v1.0.0/llms.txt`, обновление диагностического сообщения FISS-R011, документация и тесты) согласованы с нормативами FISS v1.0.0.
+- **Verification:** In progress.
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
