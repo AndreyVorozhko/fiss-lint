@@ -46,7 +46,7 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
   1. `checkRootDir` (`FISS-R001`): Verifies existence and directory status of `FISS/`.
      - *Short-circuit Invariant:* If `FISS/` is missing, the linter reports `FISS-R001` (Error) and immediately halts the pipeline, suppressing cascading errors from downstream file checks.
   2. `checkMandatoryFiles` (`FISS-R002`): Verifies presence and regular file/symlink status of `FISS/INDEX.md` and `FISS/BOOTSTRAP.md` (strictly case-sensitive).
-  3. `checkIndexLinks` (`FISS-R003`, `FISS-R011`): Scans `FISS/INDEX.md` for mandatory link to `BOOTSTRAP.md` (`FISS-R003`, Error) and recommended link to the official standard website (`FISS-R011`, Warning).
+  3. `checkIndexLinks` (`FISS-R003`, `FISS-R011`): Scans `FISS/INDEX.md` for mandatory link to `BOOTSTRAP.md` (`FISS-R003`, Error) and recommended link to the official standard website or official GitHub mirror (`FISS-R011`, Warning).
   4. `validateAllIndexes` (`FISS-R004`, `FISS-R005`, `FISS-R006`): Recursively traverses `FISS/` discovering all `INDEX.md` files via `filepath.WalkDir`.
      - **Navigation Syntax:** Uses `bufio.Scanner` to parse two-line navigation entries (`- [Title](target)\n  Read when: condition`) without regular expressions. Enforces exact two-space indentation, non-empty condition text, and the strict canonical English marker `Read when: ` without localization (`FISS-R005`, Error). In root `FISS/INDEX.md`, additionally verifies that the link targeting `BOOTSTRAP.md` is accompanied by an attached valid `Read when` condition (`FISS-R004`, Error).
      - **Link Integrity:** Calls `validateIndexLinksIntegrity` for each index (`FISS-R006`, Error). Resolves relative links relative to the containing directory of each `INDEX.md`, strips `#anchor` and `?query` fragments, excludes external URLs (`http://`, `https://`, `mailto:`, `ftp://`), enforces case-sensitive filesystem existence checks component-by-component via `os.ReadDir` (`checkPathExistsCaseSensitive`, resolving `[RISK-002]`), mandates `.md` extension on file targets, and requires `INDEX.md` within targeted directories, strictly prohibiting bare directories.
@@ -71,7 +71,7 @@ The validation engine (`internal/linter`) executes a sequential, deterministic p
 - `FISS-R008` (Error): Every `.md` file inside `FISS/` (except root index and bootstrap) MUST be reachable from `FISS/INDEX.md` through indexes. Unreachable files (orphans) are prohibited.
 - `FISS-R009` (Error): If `FISS/overrides/` exists, it MUST contain `INDEX.md`, root `FISS/INDEX.md` MUST link to it, and the link MUST require reading before skill use (`skill`).
 - `FISS-R010` (Error): If `AGENTS.md`, `CLAUDE.md`, `.cursorrules`, or `QWEN.md` exists in project root, it MUST direct agents to `FISS/INDEX.md`.
-- `FISS-R011` (Warning): `FISS/INDEX.md` should contain a reference to `https://fiss.vorozhko.ru`.
+- `FISS-R011` (Warning): `FISS/INDEX.md` should contain a reference to the official standard website (`https://fiss.vorozhko.ru`) or official GitHub mirror (`https://github.com/AndreyVorozhko/fiss`).
 *(Subsequent rules FISS-R012–R018 are scheduled for implementation in upcoming stories).*
 
 ## CLI Interface & Behavior

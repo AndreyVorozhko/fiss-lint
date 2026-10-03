@@ -78,7 +78,7 @@ fiss-lint [flags] [path]
 
 ```text
 [ERROR] [FISS-R001] FISS: directory FISS/ not found
-[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found
+[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found
 ```
 
 Если проект полностью валиден, утилита ничего не выводит в терминал и возвращает код `0`.
@@ -95,7 +95,7 @@ fiss-lint [flags] [path]
       "severity": "WARNING",
       "file": "FISS/INDEX.md",
       "line": 0,
-      "message": "recommended link to official standard https://fiss.vorozhko.ru not found"
+      "message": "recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found"
     }
   ],
   "summary": {

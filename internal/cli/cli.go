@@ -32,7 +32,7 @@ FISS Rules Summary:
   FISS-R008  [Error]    Topology: Every used area MUST be reachable from FISS/INDEX.md through indexes.
   FISS-R009  [Error]    Overrides Entry: If FISS/overrides/ exists, it MUST contain INDEX.md, and FISS/INDEX.md MUST link to FISS/overrides/INDEX.md.
   FISS-R010  [Error]    Agent Entry: If AGENTS.md exists, it MUST direct agents to FISS/INDEX.md.
-  FISS-R011  [Warning]  Standard Reference: FISS/INDEX.md SHOULD contain a reference to the official standard website (https://fiss.vorozhko.ru).
+  FISS-R011  [Warning]  Standard Reference: FISS/INDEX.md SHOULD contain a reference to the official standard website (https://fiss.vorozhko.ru or GitHub mirror).
   FISS-R012  [Error]    Knowledge Partitioning: FISS/knowledge/ MUST contain strictly subject/ and/or project/ areas.
   FISS-R013  [Error]    Human Partitioning: FISS/human/ MUST contain strictly knowledge/ and/or hmm/ areas.
   FISS-R014  [Error]    State Registry: Registries in FISS/state/ MUST be composite areas with INDEX.md or consolidated single files.

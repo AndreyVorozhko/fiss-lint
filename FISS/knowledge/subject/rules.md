@@ -20,7 +20,7 @@ This registry defines the mechanical validation rules enforced by `fiss-lint` ba
 | `FISS-R008` | Error | Topology | Every used area MUST be reachable from `FISS/INDEX.md` through indexes. Standalone `.md` files in `FISS/` not reachable from the index hierarchy are flagged. |
 | `FISS-R009` | Error | Overrides Entry | If `FISS/overrides/` exists, it MUST contain `INDEX.md`, and `FISS/INDEX.md` MUST link to `FISS/overrides/INDEX.md` with a read condition requiring it before skill use. |
 | `FISS-R010` | Error | Agent Entry | If `AGENTS.md` (or root agent instruction file) exists in the project root, it MUST direct agents to `FISS/INDEX.md` without duplicating space content. |
-| `FISS-R011` | Warning | Standard Reference | `FISS/INDEX.md` SHOULD contain a reference to the official standard website (`https://fiss.vorozhko.ru`). |
+| `FISS-R011` | Warning | Standard Reference | `FISS/INDEX.md` SHOULD contain a reference to the official standard website (`https://fiss.vorozhko.ru`) or official GitHub mirror (`https://github.com/AndreyVorozhko/fiss`). |
 | `FISS-R012` | Error | Knowledge Partitioning | If `FISS/knowledge/` exists, it MUST function strictly as a container grouping `subject` and/or `project` areas. Loose files directly in `FISS/knowledge/` are prohibited. |
 | `FISS-R013` | Error | Human Partitioning | If `FISS/human/` exists, it MUST function strictly as a container grouping `knowledge` and/or `hmm` areas. Loose files directly in `FISS/human/` are prohibited. |
 | `FISS-R014` | Error | State Registry | Registries of state items in `FISS/state/` (such as ADRs, risks, open questions) MUST NOT be scattered loosely; they MUST be structured as composite areas with `INDEX.md` or consolidated single files. |
