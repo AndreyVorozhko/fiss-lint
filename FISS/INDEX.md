@@ -8,6 +8,8 @@ Entry point to the intellectual space of the `fiss-lint` project.
   Read when: before using any skill or executing skill-governed workflows.
 - [Standard Specification (v1.0.0)](https://fiss.vorozhko.ru/v1.0.0/llms.txt)
   Read when: creating or modifying the intellectual space structure and verifying conformance.
+- [Standard Specification (GitHub Mirror)](https://github.com/AndreyVorozhko/fiss/blob/v1.0.0/llms.txt)
+  Read when: недоступен https://fiss.vorozhko.ru или работа ведётся в автономном окружении.
 - [Deterministic FISS Rules](knowledge/subject/rules.md)
   Read when: implementing, extending, or testing linter validation rules.
 - [Project Architecture & Toolchain](knowledge/project/architecture.md)

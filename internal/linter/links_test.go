@@ -69,15 +69,47 @@ func TestCheckIndexLinks(t *testing.T) {
 				if issue.FilePath != "FISS/INDEX.md" {
 					t.Errorf("expected FilePath 'FISS/INDEX.md', got '%s'", issue.FilePath)
 				}
-				wantMsg := "recommended link to official standard https://fiss.vorozhko.ru not found"
+				wantMsg := "recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found"
 				if issue.Message != wantMsg {
 					t.Errorf("expected Message '%s', got '%s'", wantMsg, issue.Message)
 				}
-				wantFormat := "[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard https://fiss.vorozhko.ru not found"
+				wantFormat := "[WARNING] [FISS-R011] FISS/INDEX.md: recommended link to official standard (https://fiss.vorozhko.ru or GitHub mirror) not found"
 				if issue.Format() != wantFormat {
 					t.Errorf("expected Format '%s', got '%s'", wantFormat, issue.Format())
 				}
 			},
+		},
+		{
+			name: "valid index with github mirror repo link",
+			content: `# Project Intellectual Space
+- [Baseline Context](BOOTSTRAP.md)
+  Read when: read always before beginning work on the project.
+- [Standard Specification](https://github.com/AndreyVorozhko/fiss)
+  Read when: creating or modifying the intellectual space structure.
+`,
+			wantIssues: 0,
+		},
+		{
+			name: "valid index with github mirror branch file link",
+			content: `# Project Intellectual Space
+- [Baseline Context](BOOTSTRAP.md)
+  Read when: read always before beginning work on the project.
+- [Standard Specification (v1.0.0)](https://github.com/AndreyVorozhko/fiss/blob/v1.0.0/llms.txt)
+  Read when: creating or modifying the intellectual space structure.
+`,
+			wantIssues: 0,
+		},
+		{
+			name: "valid index with both links (website and github mirror)",
+			content: `# Project Intellectual Space
+- [Baseline Context](BOOTSTRAP.md)
+  Read when: read always before beginning work on the project.
+- [Standard Specification (v1.0.0)](https://fiss.vorozhko.ru/v1.0.0/llms.txt)
+  Read when: creating or modifying the intellectual space structure.
+- [Standard Specification (GitHub Mirror)](https://github.com/AndreyVorozhko/fiss/blob/v1.0.0/llms.txt)
+  Read when: недоступен https://fiss.vorozhko.ru или работа ведётся в автономном окружении.
+`,
+			wantIssues: 0,
 		},
 		{
 			name:       "missing both links",

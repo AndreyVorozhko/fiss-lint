@@ -1,34 +1,35 @@
 # FISS Task Handoff
 
-task: https://taiga.vorozhko.ru/project/vorozhkoru/us/43 (User Story #43: Интеграция fiss-lint в навыки fiss-maintain и fiss-validate)
+task: https://taiga.vorozhko.ru/project/vorozhkoru/us/49 (User Story #49: Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011))
 canonical tracker: https://taiga.vorozhko.ru/
 task status: completed
 fiss synchronization: synchronized
 
 ## Context & Baseline
-- **Previous Story:** Story #8 (Machine-readable format `--format json` and `--strict` mode) successfully completed, accepted, and merged into `main` (`69a66c2`).
-- **Target Story:** User Story #43 (Taiga Ref: 43, ID: 56) — "Интеграция fiss-lint в навыки fiss-maintain и fiss-validate".
-- **Branch:** `feature/story-43/skill-integration`.
-- **Pre-Planning Verification:** Story #43 scope and DoD (detection/installation of `fiss-lint`, removal of redundant mechanical checks, delegation of deterministic verification to `fiss-lint`) audited against FISS v1.0.0 normative specification, Conformance Checklist, and skills architecture.
-- **Verification:** Completed. All 5 tasks closed, end-to-end verification script `scripts/verify-skills-integration.sh` passed, exit code 0.
+- **Previous Story:** Story #43 (Интеграция fiss-lint в навыки fiss-maintain и fiss-validate) successfully completed, accepted, and merged into `main` (`74c532d`).
+- **Target Story:** User Story #49 (Taiga Ref: 49, ID: 57) — "Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011)".
+- **Branch:** `feature/story-49/github-mirror`.
+- **Pre-Planning Verification:** Story #49 scope and DoD (валидация ссылки на GitHub-зеркало стандарта FISS `https://github.com/AndreyVorozhko/fiss`, включая ветки версий `blob/v1.0.0/llms.txt`, обновление диагностического сообщения FISS-R011, документация и тесты) согласованы с нормативами FISS v1.0.0.
+- **Verification:** Completed. All constituent tasks (T-54, T-55, T-56, T-57) and off-track task (T-58) closed, unit and integration tests passing (`make test`), matrix cross-compilation passing (`make build-all`), and self-linting clean (`bin/fiss-lint --strict .`).
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
 ### Outcome Classification
 1. **Subject Knowledge (`subject-knowledge-refresh`):**
-   - Standard FISS v1.0.0 rules and invariants unchanged. Verified normative consistency. No drift detected.
-   - Classification: **No persistence**.
+   - Rule `FISS-R011` definition updated in `FISS/knowledge/subject/rules.md`: official standard specification link may target either official website (`https://fiss.vorozhko.ru`) or official GitHub mirror (`https://github.com/AndreyVorozhko/fiss`, including version branch file links like `https://github.com/AndreyVorozhko/fiss/blob/v1.0.0/llms.txt`), or both simultaneously.
+   - Classification: **Capture here** (`FISS/knowledge/subject/rules.md`).
 2. **Project Knowledge (`project-knowledge-refresh`):**
    - Updated `FISS/knowledge/project/architecture.md`:
-     - Documented Agent Skills Integration Architecture (tri-partite model: `fiss-lint` mechanical engine, `fiss-validate` cognitive inspector, `fiss-maintain` operational mutator).
-     - Documented autonomous discovery and installation protocol.
-   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
+     - Documented `isStandardTarget` and `checkIndexLinks` behavior recognizing GitHub mirror targets.
+     - Documented dual-link fallback pattern in root `FISS/INDEX.md` for offline/fallback resilience.
+   - Integrated standard ecosystem note `Built with ღ and [FISS](https://fiss.vorozhko.ru)` into `README.md` and CLI version banner (`fiss-lint --version`) per FISS v1.0.0 examples.
+   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `FISS/INDEX.md`, `README.md`).
 3. **Architectural Decisions (`adr-maintain`):**
-   - Codified decision on delegating deterministic Level 1 verification to `fiss-lint` CLI and eliminating duplicated AST parsing / code-fence stripping from skills.
-   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `ai-skills` META.md).
+   - Codified decision on recognizing GitHub mirror repository root and version branch file links (`blob/v1.0.0/llms.txt`) as valid targets for rule `FISS-R011` without network requests, maintaining deterministic, zero-dependency offline validation.
+   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).
 4. **Risks (`risk-register`):**
-   - Logged and mitigated `[RISK-004]` (Agent Runtime Environment Missing `fiss-lint` Binary) in `FISS/state/risks.md`.
-   - Classification: **Capture here** (`FISS/state/risks.md`).
+   - Offline resilience risk addressed by supporting local/mirror references; no new risks introduced.
+   - Classification: **No persistence**.
 5. **Open Questions (`open-questions-maintain`):**
    - No new unresolved questions generated. Existing `[OQ-003]` remains active.
    - Classification: **No persistence**.
@@ -36,8 +37,8 @@ fiss synchronization: synchronized
    - FISS standard concepts unchanged.
    - Classification: **No persistence**.
 7. **Project Terminology (`glossary-maintain`):**
-   - Tri-partite architecture concepts aligned across documentation and skills.
+   - Terminology for GitHub mirror and standard references aligned across CLI diagnostics and documentation.
    - Classification: **No persistence**.
 
 - **Handoff Decision:**
-  - Project memory, architecture, risk register, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for acceptance and merge.
+  - Project memory, architecture, and operational state are fully synchronized with the codebase and requirements. All gate invariants satisfied (`fiss synchronization: synchronized`). Transition gate opened for acceptance and merge.
