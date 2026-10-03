@@ -80,7 +80,7 @@ func Run(args []string, stdout, stderr io.Writer, info model.BuildInfo) int {
 	}
 
 	if showVersion {
-		fmt.Fprintf(stdout, "fiss-lint version %s (commit: %s, built: %s)\n", info.Version, info.Commit, info.BuildDate)
+		fmt.Fprintf(stdout, "fiss-lint version %s (commit: %s, built: %s)\nBuilt with ღ and FISS (https://fiss.vorozhko.ru)\n", info.Version, info.Commit, info.BuildDate)
 		return 0
 	}
 

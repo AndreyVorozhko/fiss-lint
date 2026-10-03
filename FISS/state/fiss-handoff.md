@@ -10,7 +10,7 @@ fiss synchronization: synchronized
 - **Target Story:** User Story #49 (Taiga Ref: 49, ID: 57) — "Валидация ссылки на GitHub-зеркало стандарта FISS (FISS-R011)".
 - **Branch:** `feature/story-49/github-mirror`.
 - **Pre-Planning Verification:** Story #49 scope and DoD (валидация ссылки на GitHub-зеркало стандарта FISS `https://github.com/AndreyVorozhko/fiss`, включая ветки версий `blob/v1.0.0/llms.txt`, обновление диагностического сообщения FISS-R011, документация и тесты) согласованы с нормативами FISS v1.0.0.
-- **Verification:** Completed. All 4 constituent tasks closed, unit and integration tests passing (`make test`), matrix cross-compilation passing (`make build-all`), and self-linting clean (`bin/fiss-lint --strict .`).
+- **Verification:** Completed. All constituent tasks (T-54, T-55, T-56, T-57) and off-track task (T-58) closed, unit and integration tests passing (`make test`), matrix cross-compilation passing (`make build-all`), and self-linting clean (`bin/fiss-lint --strict .`).
 
 ## Knowledge Refresh & Durable Outcomes (fiss-maintain)
 
@@ -22,7 +22,8 @@ fiss synchronization: synchronized
    - Updated `FISS/knowledge/project/architecture.md`:
      - Documented `isStandardTarget` and `checkIndexLinks` behavior recognizing GitHub mirror targets.
      - Documented dual-link fallback pattern in root `FISS/INDEX.md` for offline/fallback resilience.
-   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `FISS/INDEX.md`).
+   - Integrated standard ecosystem note `Built with ღ and [FISS](https://fiss.vorozhko.ru)` into `README.md` and CLI version banner (`fiss-lint --version`) per FISS v1.0.0 examples.
+   - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`, `FISS/INDEX.md`, `README.md`).
 3. **Architectural Decisions (`adr-maintain`):**
    - Codified decision on recognizing GitHub mirror repository root and version branch file links (`blob/v1.0.0/llms.txt`) as valid targets for rule `FISS-R011` without network requests, maintaining deterministic, zero-dependency offline validation.
    - Classification: **Capture here** (`FISS/knowledge/project/architecture.md`).

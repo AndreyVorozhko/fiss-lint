@@ -59,6 +59,7 @@ func TestRun(t *testing.T) {
 			expectedCode: 0,
 			stdoutContains: []string{
 				"fiss-lint version 1.2.3 (commit: abcdef0, built: 2026-09-30T12:00:00Z)",
+				"Built with ღ and FISS (https://fiss.vorozhko.ru)",
 			},
 		},
 		{
@@ -68,6 +69,7 @@ func TestRun(t *testing.T) {
 			expectedCode: 0,
 			stdoutContains: []string{
 				"fiss-lint version 1.2.3 (commit: abcdef0, built: 2026-09-30T12:00:00Z)",
+				"Built with ღ and FISS (https://fiss.vorozhko.ru)",
 			},
 		},
 		{

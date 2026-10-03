@@ -210,3 +210,8 @@ chmod +x .git/hooks/pre-commit
 ## Лицензия
 
 Проект распространяется на условиях лицензии MIT.
+
+---
+
+Built with ღ and [FISS](https://fiss.vorozhko.ru)
+
