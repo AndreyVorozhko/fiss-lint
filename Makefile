@@ -38,3 +38,11 @@ init-hooks:
 	git config core.hooksPath .githooks
 	chmod +x .githooks/*
 
+.PHONY: kilo
+kilo: ## Запустить kilo code с навыками проекта и другими настройками
+	@if [ ! -f kilo.config.jsonc ]; then \
+		echo "ERROR: kilo.config.jsonc not found in project directory"; \
+		exit 1; \
+	fi
+	KILO_CONFIG=./kilo.config.jsonc kilo
+	

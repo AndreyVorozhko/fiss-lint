@@ -9,3 +9,6 @@ bin/
 
 # External skills repository
 skills-research
+
+# Kilo project variables
+kilo.config.jsonc
